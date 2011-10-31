@@ -1,0 +1,339 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage{color}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\newtheorem{defin}{Definition}
+\newtheorem{ex}{Example}
+
+% Draws a cylinder with "DB" in the middle
+\newsavebox{\DB}
+\savebox{\DB}{
+\qbezier(0,30)(15,25)(30,30)
+\qbezier(0,30)(15,35)(30,30)
+\qbezier(0,5)(15,0)(30,5)
+\put(0,5){\line(0,1){25}}
+\put(30,5){\line(0,1){25}}
+\put(6,12){\large DB}
+}
+
+% Draws a small stick figure
+\newsavebox{\stickman}
+\savebox{\stickman}{
+\put(5,20){\circle{8}}
+\put(5,16){\line(0,-1){12}}
+\put(0,13){\line(1,0){10}}
+}
+
+% For drawing the box around nodes at the end of Section 2
+\newsavebox{\nodeBox}
+\savebox{\nodeBox}{
+\put(0,0){\line(0,1){50}}
+\put(0,0){\line(1,0){30}}
+\put(30,50){\line(-1,0){30}}
+\put(30,50){\line(0,-1){50}}
+}
+
+\newenvironment{itemize_packed}{
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+}{\end{itemize}}
+
+\title{Notes for Introduction to Artificial Intelligence}
+\begin{document}
+
+%===============================================================================
+
+\part{Welcome to AI}
+
+\begin{defin}[Intelligent Agent]
+An \emph{\textbf{Intelligent Agent}} observes the environment using its \emph{\textbf{sensors}}, makes a decision, and affects the environment using its \emph{\textbf{actuators}}.
+\end{defin}
+
+\begin{center}
+\begin{picture}(200,100)
+\thicklines
+\put(20,20){\line(1,0){70}}
+\put(90,20){\line(0,1){70}}
+\put(20,20){\line(0,1){70}}
+\put(20,90){\line(1,0){70}}
+\put(40,92){Agent}
+\put(170,55){\oval(40,90)}
+\put(167,88){\begin{rotate}{-90}\large{Environment}\end{rotate}}
+\put(158,90){\vector(-4,-1){80}}
+\put(80,40){\vector(4,-1){80}}
+\put(100,80){\begin{rotate}{15}Sensors\end{rotate}}
+\put(100,40){\begin{rotate}{-15}Actuators\end{rotate}}
+\color{red}
+\put(65,70){\vector(0,-1){30}}
+\put(50,50){\LARGE{\textbf{?}}}
+\end{picture}
+\end{center}
+
+
+\begin{defin}[Perception-Action Cycle]
+The cycle \[\emph{environment} \rightarrow \emph{sensor} \rightarrow \emph{decision} \rightarrow \emph{action} \rightarrow \emph{environment} \dots\]
+\end{defin}
+
+\section{Applications of Intelligent Agents} %------------------------------------------------
+
+\begin{itemize_packed}
+
+\item \textbf{Finance}
+\begin{itemize}
+\item The environment is the market.
+\item The sensors indicate the prices.
+\item The actuators make trades.
+\end{itemize}
+
+\item \textbf{Robotics}
+\begin{itemize}
+\item The environment is the physical world.
+\item The sensors are cameras, microphones, tactile sensors, etc.
+\item The actuators are motors, wheels, speakers, etc.
+\end{itemize}
+
+\item \textbf{Games}
+\begin{enumerate}
+\item Chess
+\begin{itemize}
+\item The environment is the other player (i.e., you).
+\item The sensors indicate your moves.
+\item The actuators are the robot's moves.
+\end{itemize}
+\item Video games: the goal is to make the computer player seem "real."
+\end{enumerate}
+
+\item \textbf{Medicine}
+\newline Called a "Diagnostic Agent." Takes data (the symptoms) from the patient, but gives its analysis to the doctor.
+
+\item \textbf{The World Wide Web}
+\newline A Webcrawler.
+
+\begin{center}
+\begin{picture}(200,100)
+\thicklines
+\put(20,20){\line(1,0){70}}
+\put(90,20){\line(0,1){70}}
+\put(20,20){\line(0,1){70}}
+\put(20,90){\line(1,0){70}}
+\put(38,92){Crawler}
+\put(170,55){\oval(40,90)}
+\put(167,74){\begin{rotate}{-90}\large{WWW}\end{rotate}}
+\put(158,90){\vector(-4,-1){80}}
+\put(100,80){\begin{rotate}{15}Web pages\end{rotate}}
+
+\put(30,40){\usebox{\DB}}
+\put(120,0){\usebox{\stickman}}
+
+\put(80,40){\vector(2,-1){30}}
+\put(110,10){\vector(-2,1){30}}
+\put(80,14){\begin{rotate}{-30}Query\end{rotate}}
+\end{picture}
+\end{center}
+
+\end{itemize_packed}
+
+\section{Attributes of Environments} % -------------------------------------------------------
+
+\begin{defin}[Fully Observable vs. Partially Observable]
+An environment is \emph{\textbf{fully observable}} if the agent can sense enough data at any time to make the optimal decision. It is \emph{\textbf{partially observable}} if not enough information is immediately detectable (via the sensors) to make the optimal decision.
+\end{defin}
+
+\textbf{Example:} In poker, not all of the cards are visible. The agent must use memory and/or logic to attempt to guess them.
+
+\begin{defin}[Deterministic vs. Stochastic]
+An environment is \emph{\textbf{deterministic}} if the agent's actions uniquely determine the outcome. It is \emph{\textbf{stochastic}} if the outcome of an action is not totally predictable.
+\end{defin}
+
+\textbf{Example:} Throwing dice is stochastic, because it involves randomness.
+
+\begin{defin}[Discrete vs. Continuous]
+An environment is \emph{\textbf{discrete}} if there are finitely-many action choices, and finitely-many things that can be sensed. It is \emph{\textbf{continuous}} if there are infinitely-many.
+\end{defin}
+
+\begin{defin}[Benign vs. Adversarial]
+An environment is \emph{\textbf{benign}} if the environment has no objective that would contradict that of the agent. It is \emph{\textbf{adversarial}} if the environment counteracts what the agent is trying to achieve.
+\end{defin}
+
+\textbf{Example:} The weather is benign. Chess is adversarial.
+
+%===============================================================================
+
+\part{Problem Solving}
+
+\begin{defin}[Problem]
+A problem is defined by the following functions, defined on the sets \textbf{S} of all possible states and \textbf{A} of all possible actions:
+\begin{itemize_packed}
+\item \emph{Actions} : \textbf{S} $\rightarrow$ \textbf{A} gives all possible actions at the given state.
+\item \emph{Result} : (\textbf{S} $\times$ \textbf{A}) $\rightarrow$ \textbf{S} gives the resulting state of applying an action to the given state.
+\item \emph{GoalTest} : \textbf{S} $\rightarrow$ \emph{\{true, false\}} indicates if a given state is a goal.
+\item \emph{PathCost} : ($s_1\xrightarrow{a_1}s_2\xrightarrow{a_2}s_3$...) $\rightarrow$ $\mathbb{Z}$ indicates the cost of a series of actions. Note that if \emph{PathCost} is additive, then it can be defined simply by \emph{StepCost} : (\textbf{S} $\times$ \textbf{A}) $\rightarrow$ $\mathbb{Z}$, which gives the cost for a single action.
+\end{itemize_packed}
+\end{defin}
+
+\begin{defin}[Frontier]
+The farthest parts that have been \emph{explored} (but not visited!).
+\end{defin}
+
+\section{Search algorithms} %-----------------------------------------------------------------
+
+The following algorithm will be studied in this chapter:
+
+\begin{algorithm}
+\caption{TreeSearch}
+\begin{algorithmic}[1]
+\REQUIRE problem
+\ENSURE TreeSearch = (Path to goal) or (fail)
+\STATE frontier = \{[initial state]\}
+\LOOP
+	\IF{frontier is empty}
+		\RETURN fail
+	\ENDIF
+	\STATE \label{remove_choice} path = remove\_choice(frontier)
+	\STATE s = path.end
+	\IF{GoalTest(s)}
+		\RETURN path
+	\ENDIF
+	\FOR{a in Actions(s)}
+		\STATE \label{addResult} add Result(s,a) to frontier
+	\ENDFOR
+\ENDLOOP
+\end{algorithmic}
+\end{algorithm}
+
+Before going further, an optimization is immediately apparent. The \textbf{GraphSearch} algorithm improves on \textbf{TreeSearch} by eliminating redundant paths (i.e., backtracking). It modifies TreeSearch in the following ways:
+\begin{itemize_packed}
+\item An extra variable, \emph{explored}, maintains a set of all nodes visited.
+\item After calling \emph{remove\_choice} on line \ref{remove_choice}, add \emph{s} to \emph{explored}
+\item In the \textbf{for}-loop, do not execute line \ref{addResult} if $Result(s,a) \in explored$ or $frontier$
+\end{itemize_packed}
+
+Different choices for how to define the \emph{remove\_choice} function produce different ways to search the tree. We have:
+
+\begin{defin}[Breadth-first search]
+\emph{remove\_choice} always returns the state with the \underline{shortest path}.
+\end{defin}
+
+\begin{defin}[Uniform-cost aka "cheapest-first" search]
+\emph{remove\_choice} always returns the state with the \underline{lowest total cost}.
+\end{defin}
+
+\begin{defin}[Depth-first search]
+\emph{remove\_choice} always returns the state with the \underline{longest path}.
+\end{defin}
+
+Note that:
+
+\begin{itemize_packed}
+\item Breadth-first search is optimal, in that it always finds the \textbf{shortest path}.
+\item Uniform-cost search is optimal, in that it always finds the \textbf{cheapest path} (assuming that all step costs are strictly positive).
+\item Depth-first search is not optimal, but has the advantage of needing less storage space than the others.
+\end{itemize_packed}
+
+\begin{defin}[complete]
+A \emph{complete} algorithm will always find a solution.
+\end{defin}
+
+To improve on the preceding search algorithms, more information is needed. Suppose we have available a heuristic function $h$ : \textbf{S}$\rightarrow\mathbb{R}^+$ that estimates the distance from any state to the goal.
+
+\begin{defin}[Greedy best-first search]
+\emph{remove\_choice} always returns the state \underline{closest to the goal}.
+\end{defin}
+
+\begin{defin}[A* search]
+\emph{remove\_choice} always returns the state with the \underline{minimum value of $f$}. The function $f$ is defined as $f = g + h$, where $g = PathCost$.
+\end{defin}
+
+The A* algorithm will find the lowest-cost path \textbf{IF} the distance function $h$ satisfies the condition:
+\begin{center}
+$h(s)$ $\leq$ the true cost from $s$.
+\end{center}
+In this case, we say that $h$
+\begin{itemize_packed}
+\item never over-estimates
+\item is \textbf{optimistic}
+\item is \textbf{admissible}
+\end{itemize_packed}
+
+An admissible heuristic can be derived from a formal statement of a problem by relaxing one or more of the constraints.
+
+\section{Summary} %-----------------------------------------------------------
+
+The techniques of problem-solving discussed in this chapter can be applied when the problem being studied is:
+\begin{itemize_packed}
+\item fully observable
+\item discrete
+\item deterministic
+\item static (i.e., only the agent can change the state of the environment)
+\item the set of all possible actions at any given state is known.
+\end{itemize_packed}
+
+\section{A note on implementation} %----------------------------------------------------------
+
+A state is implemented on a computer as a data structure called a \textbf{node}. A node consists of four fields:
+\begin{itemize_packed}
+\item \textbf{State}: a description of the state of the environment at the end of the path.
+\item \textbf{Action}: the action taken to arrive at that state.
+\item \textbf{Cost}: the total cost of getting to that state.
+\item \textbf{Parent}: a pointer to the previous node in the path
+\end{itemize_packed}
+
+\noindent\textbf{Example}: Suppose we have the path
+\begin{center}
+$A \rightarrow S \rightarrow F$.
+\end{center}
+This would be implemented with the following nodes:
+
+\begin{center}
+\begin{picture}(250,100)
+\put(3,49){\textbf{state}}
+\put(3,37){\textbf{action}}
+\put(3,25){\textbf{cost}}
+\put(3,13){\textbf{parent}}
+
+\put(50,10){\usebox{\nodeBox}}
+\put(53,49){A}
+\put(53,37){$\emptyset$}
+\put(53,25){0}
+\put(53,13){$\emptyset$}
+
+\put(130,10){\usebox{\nodeBox}}
+\put(133,49){S}
+\put(133,37){A$\rightarrow$S}
+\put(133,25){...}
+\put(133,13){A}
+
+\put(210,10){\usebox{\nodeBox}}
+\put(213,49){F}
+\put(213,37){S$\rightarrow$F}
+\put(213,25){...}
+\put(213,13){S}
+
+\put(212,16){\vector(-4,1){50}}
+\put(132,16){\vector(-4,1){50}}
+
+\end{picture}
+\end{center}
+
+In addition,
+\begin{itemize_packed}
+\item The frontier nodes are best stored as two data structures:
+\begin{itemize_packed}
+\item A \textbf{priority queue}, since we need to be able to dynamically add new nodes and remove the "best"
+\item A \textbf{set}, since we need to be able to check membership.
+\end{itemize_packed}
+\item The explored nodes are best stored as a \textbf{set}, since we need to dynamically add new nodes and check membership.
+\end{itemize_packed}
+
+\part{Probability in AI}
+
+
+\end{document}
