@@ -294,6 +294,8 @@ This would be implemented with the following nodes:
 
 \begin{center}
 \begin{picture}(250,100)
+\thicklines
+
 \put(3,49){\textbf{state}}
 \put(3,37){\textbf{action}}
 \put(3,25){\textbf{cost}}
@@ -333,7 +335,161 @@ In addition,
 \item The explored nodes are best stored as a \textbf{set}, since we need to dynamically add new nodes and check membership.
 \end{itemize_packed}
 
+%===============================================================================
+
 \part{Probability in AI}
 
+\section{Bayes Networks}
+
+In this class, all events are assumed to be \textbf{binary}, i.e. there are only two possible values.
+
+\paragraph{Bayes Network Example:} Diagnosing a car that won't start.
+
+\begin{center}
+\begin{picture}(300,200)
+\thicklines
+
+\put(20,180){Battery}
+\put(25,170){Age}
+\put(18,166){\framebox(37,24)}
+
+\put(37,166){\vector(0,-1){16}}
+
+\put(20,140){Battery}
+\put(23,130){Dead}
+\put(18,126){\framebox(37,24)}
+
+\put(37,126){\vector(-1,-4){4}}
+\put(39,126){\vector(3,-2){47}}
+
+\put(10,100){Battery}
+\put(12,90){Meter}
+\put(8,86){\framebox(37,24)}
+
+\put(80,180){Alternator}
+\put(85,170){Broken}
+\put(78,166){\framebox(49,24)}
+
+\put(108,166){\vector(1,-2){8}}
+
+\put(150,180){Fan belt}
+\put(151,170){Broken}
+\put(148,166){\framebox(42,24)}
+
+\put(160,166){\vector(-3,-2){24}}
+
+\put(120,140){Not}
+\put(110,130){Charging}
+\put(108,126){\framebox(42,24)}
+
+\put(129,125){\vector(-2,-3){17}}
+
+\put(90,90){Battery}
+\put(94,80){Flat}
+\put(88,76){\framebox(37,24)}
+
+\put(100,75){\vector(-3,-2){75}}
+\put(103,75){\vector(-1,-1){43}}
+\put(106,75){\vector(-1,-4){11}}
+\put(109,75){\vector(3,-4){33}}
+
+\put(10,15){Lights}
+\put(8,11){\framebox(30,14)}
+
+\put(50,20){Oil}
+\put(48,10){Light}
+\put(46,6){\framebox(28,24)}
+
+\put(90,20){Gas}
+\put(85,10){Gauge}
+\put(83,6){\framebox(32,24)}
+
+\put(160,80){No}
+\put(159,70){Oil}
+\put(157,66){\framebox(20,24)}
+
+\put(167,65){\vector(-3,-1){100}}
+\put(170,65){\vector(2,-3){27}}
+
+\put(190,80){No}
+\put(189,70){Gas}
+\put(187,66){\framebox(20,24)}
+
+\put(198,65){\vector(-3,-1){100}}
+\put(200,65){\vector(-3,-2){50}}
+\put(202,65){\vector(1,-4){10}}
+
+\put(215,80){Fuel Line}
+\put(216,70){Blocked}
+\put(213,66){\framebox(46,24)}
+
+\put(230,65){\vector(-2,-1){70}}
+
+\put(267,80){Starter}
+\put(267,70){Broken}
+\put(265,66){\framebox(40,24)}
+
+\put(270,65){\vector(-3,-1){100}}
+
+\put(190,15){Dipstick}
+\put(188,11){\framebox(40,14)}
+
+\color{red}
+\put(130,20){Car Won't}
+\put(140,10){Start}
+\put(128,6){\framebox(50,24)}
+
+\end{picture}
+\end{center}
+
+Bayes Networks have many applications, including:
+\begin{itemize_packed}
+\item Diagnostics
+\item Prediction
+\item Machine Learning
+\item Finance
+\item Robotics
+\item Web searching
+\item Particle filters
+\item HMM
+\end{itemize_packed}
+
+\paragraph{Probability} Essential to the understanding of Bayes Networks is the theory of probability.
+
+\begin{defin}[Complementary Probability] \quad
+\begin{center}
+$P(A) = p \iff P(\neg A) = 1-p$
+\end{center}
+\end{defin}
+
+\begin{defin} \quad
+\begin{center}
+$X \perp Y \implies P(X,Y) = P(X)P(Y)$
+\end{center}
+\begin{itemize_packed}
+\item $X \perp Y$ means $X$ is \emph{\textbf{(absolutely) independent}} of $Y$.
+\item $P(X,Y)$ is the \emph{\textbf{Joint Probability}} of $X$ and $Y$.
+\item $P(X)$ and $P(Y)$ are the \emph{\textbf{Marginal Probabilities}} of $X$ and $Y$.
+\end{itemize_packed}
+\end{defin}
+
+\begin{defin}[Total Probability] \quad
+\begin{center}
+$P(Y) = \sum_i P(Y|X=i)P(X=i)$
+\end{center}
+\end{defin}
+
+\begin{defin}[Bayes' Rule] \quad
+\begin{center}
+$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$
+\end{center}
+\begin{itemize_packed}
+\item $P(A|B)$ is called the \emph{\textbf{posterior}}.
+\item $P(B|A)$ is called the \emph{\textbf{likelihood}}.
+\item $P(A)$ is called the \emph{\textbf{prior}}.
+\item $P(B)$ is called the \emph{\textbf{marginal likelihood}}.
+\end{itemize_packed}
+The marginal likelihood is often expanded into the total probability.
+\end{defin}
 
 \end{document}
