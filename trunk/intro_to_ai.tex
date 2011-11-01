@@ -8,6 +8,7 @@
 \usepackage{color}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{multicol}
 
 \newtheorem{defin}{Definition}
 \newtheorem{ex}{Example}
@@ -339,11 +340,9 @@ In addition,
 
 \part{Probability in AI}
 
-\section{Bayes Networks}
+\paragraph{Bayes Networks.} In this class, all events are assumed to be \textbf{binary}, i.e. there are only two possible values.
 
-In this class, all events are assumed to be \textbf{binary}, i.e. there are only two possible values.
-
-\paragraph{Bayes Network Example:} Diagnosing a car that won't start.
+\noindent Consider the following diagram, representing an attempt to diagnose a car that won't start.
 
 \begin{center}
 \begin{picture}(300,200)
@@ -462,7 +461,7 @@ $P(A) = p \iff P(\neg A) = 1-p$
 \end{center}
 \end{defin}
 
-\begin{defin} \quad
+\begin{defin}[Independence] \quad
 \begin{center}
 $X \perp Y \implies P(X,Y) = P(X)P(Y)$
 \end{center}
@@ -475,13 +474,19 @@ $X \perp Y \implies P(X,Y) = P(X)P(Y)$
 
 \begin{defin}[Total Probability] \quad
 \begin{center}
-$P(Y) = \sum_i P(Y|X=i)P(X=i)$
+$P(Y) = \displaystyle\sum_i P(Y|X=i)P(X=i)$
+\end{center}
+\end{defin}
+
+\begin{defin}[Conditional Probability] \quad
+\begin{center}
+$P(Q|E) = \displaystyle\frac{P(Q,E)}{P(E)}$
 \end{center}
 \end{defin}
 
 \begin{defin}[Bayes' Rule] \quad
 \begin{center}
-$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$
+$P(A|B) = \displaystyle\frac{P(B|A)P(A)}{P(B)}$
 \end{center}
 \begin{itemize_packed}
 \item $P(A|B)$ is called the \emph{\textbf{posterior}}.
@@ -489,7 +494,383 @@ $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$
 \item $P(A)$ is called the \emph{\textbf{prior}}.
 \item $P(B)$ is called the \emph{\textbf{marginal likelihood}}.
 \end{itemize_packed}
-The marginal likelihood is often expanded into the total probability.
+The marginal likelihood is often expanded using the total probability.
 \end{defin}
+
+\begin{defin}[Diagnostic Reasoning] A Bayes Network often has the following form:
+\begin{center}
+\begin{picture}(90,70)
+\thicklines
+\put(0,0){\framebox(90,70)}
+
+\put(10,10){B}
+\put(14,13){\circle{17}}
+\put(28,10){observable}
+
+\put(10,50){A}
+\put(27,50){not observable}
+\put(15,53){\circle{17}}
+
+\put(14,46){\vector(0,-1){25}}
+\end{picture}
+\end{center}
+
+\noindent where $P(A)$, $P(B|A)$ and $P(B|\neg A)$ are known. \emph{\textbf{Diagnostic Reasoning}} is the process by which we attempt to find $P(A|B)$ or $P(A|\neg B)$.
+\end{defin}
+
+\begin{defin}[Conditional Independence] The variables $A$ and $B$ are \emph{\textbf{Conditionally Independent given $C$}} if
+\begin{center}
+$P(A|C,B) = P(A,C)$.
+\end{center}
+\noindent In this case, we write $A \perp B | C$.
+\end{defin}
+
+\paragraph{Conditional versus Absolute Independence.} Consider the following two examples:
+\begin{center}
+\begin{picture}(170,90)
+\thicklines
+
+\put(10,20){$T_1$}
+\put(15,23){\circle{17}}
+
+\put(50,20){$T_2$}
+\put(55,23){\circle{17}}
+
+\put(30,60){$C$}
+\put(34,63){\circle{17}}
+
+\put(31,55){\vector(-1,-2){12}}
+\put(37,55){\vector(1,-2){12}}
+
+\put(13,1){$T_1 \perp T_2 | C$}
+
+
+\put(110,60){$S$}
+\put(115,63){\circle{17}}
+
+\put(150,60){$R$}
+\put(155,63){\circle{17}}
+
+\put(130,20){$H$}
+\put(135,23){\circle{17}}
+
+\put(117,55){\vector(1,-2){12}}
+\put(153,55){\vector(-1,-2){12}}
+
+\put(122,1){$S \perp R$}
+
+\end{picture}
+\end{center}
+
+\noindent The network on the left represents two tests, $T_1$ and $T_2$, used to determine whether a patient has cancer, represented by $C$. The tests $T_1$ and $T_2$ are conditionally independent given $C$: if we already know whether the person has cancer, then knowing the outcome of one test will have no effect on the probability of the other test. However, $T_1$ and $T_2$ are \textbf{not} absolutely independent. If we do not know whether the patient has cancer, then a positive (or negative) result on one test will affect the probability of the other test.
+
+In the network on the right, $S$ represents whether it is sunny outside, $R$ represents whether the professor got a raise, and $H$ represents whether the professor is happy. In this example, $S$ and $R$ are absolutely independent: the weather and the professor's salary have nothing to do with each other. However, $S$ and $R$ are \textbf{not} conditionally independent given $H$. If we know that the professor is happy, then sunny weather could "\textbf{explain away}" his happiness, making a raise less likely.
+
+\paragraph{Advantages of Bayes Networks.} \quad
+
+\begin{picture}(300,100)
+\thicklines
+
+\put(5,85){A}
+\put(9,88){\circle{17}}
+
+\put(12,80){\vector(2,-3){13}}
+
+\put(45,85){B}
+\put(49,88){\circle{17}}
+
+\put(46,80){\vector(-2,-3){13}}
+
+\put(25,50){C}
+\put(29,53){\circle{17}}
+
+\put(26,45){\vector(-2,-3){13}}
+\put(32,45){\vector(2,-3){13}}
+
+\put(5,15){D}
+\put(9,18){\circle{17}}
+
+\put(45,15){E}
+\put(49,18){\circle{17}}
+
+\put(80,40){
+\begin{tabular}{r l}
+Given: & $P(A) \quad P(B)$ \\
+ & $P(C|A,B)$ \\
+ & $P(D|C) \quad P(E|C)$ \\
+Find: & $P(A,B,C,D,E)$ \\
+ & $=P(A)P(B)P(C|A,B)P(D|C)P(E|C)$
+\end{tabular}
+}
+\end{picture}
+
+\noindent The advantage of using a Bayes Network to describe this situation, is that calculating $P(A,B,C,D,E)$ only requires 10 variables. Enumerating all the possibilities would require storing $2^5-1 = 31$ different values.
+
+In general, if a node has $k$ incoming arcs, it will require $2^k$ variables.
+
+\paragraph{D-separation, aka Reachability.}
+
+\begin{center}
+\begin{picture}(100,50)
+\put(10,25){\circle*{17}}
+\put(20,22){ = known variable's value}
+\end{picture}
+\end{center}
+
+\begin{center}
+\begin{picture}(260,60)
+\thicklines
+
+\put(20,50){\underline{Active Triplets}}
+\put(160,50){\underline{Inactive Triplets}}
+
+\put(10,10){\circle{17}}
+\put(18,10){\vector(1,0){24}}
+\put(50,10){\circle{17}}
+\put(58,10){\vector(1,0){24}}
+\put(90,10){\circle{17}}
+
+\put(160,10){\circle{17}}
+\put(168,10){\vector(1,0){24}}
+\put(200,10){\circle*{17}}
+\put(208,10){\vector(1,0){24}}
+\put(240,10){\circle{17}}
+
+\end{picture}
+\end{center}
+
+\begin{center}
+\begin{picture}(260,70)
+\thicklines
+
+\put(50,53){\circle{17}}
+\put(30,18){\circle{17}}
+\put(70,18){\circle{17}}
+
+\put(47,45){\vector(-2,-3){13}}
+\put(53,45){\vector(2,-3){13}}
+
+\put(200,53){\circle*{17}}
+\put(180,18){\circle{17}}
+\put(220,18){\circle{17}}
+
+\put(197,45){\vector(-2,-3){13}}
+\put(203,45){\vector(2,-3){13}}
+
+\end{picture}
+\end{center}
+
+\begin{center}
+\begin{picture}(260,60)
+\thicklines
+
+\put(30,48){\circle{17}}
+\put(70,48){\circle{17}}
+\put(50,13){\circle*{17}}
+
+\put(33,40){\vector(2,-3){13}}
+\put(67,40){\vector(-2,-3){13}}
+
+\put(180,48){\circle{17}}
+\put(220,48){\circle{17}}
+\put(200,13){\circle{17}}
+
+\put(183,40){\vector(2,-3){13}}
+\put(217,40){\vector(-2,-3){13}}
+
+\end{picture}
+\end{center}
+
+\begin{center}
+\begin{picture}(260,110)
+\thicklines
+
+\put(30,98){\circle{17}}
+\put(70,98){\circle{17}}
+\put(50,63){\circle{17}}
+
+\put(33,90){\vector(2,-3){13}}
+\put(67,90){\vector(-2,-3){13}}
+\put(50,55){\vector(0,-1){20}}
+
+\put(50,31){\circle*{1}}
+\put(50,27){\circle*{1}}
+\put(50,23){\circle*{1}}
+
+\put(50,12){\circle*{17}}
+
+\end{picture}
+\end{center}
+
+%===============================================================================
+
+\part{Probabilistic Inference}
+
+Consider the following Bayes network:
+
+\begin{center}
+\begin{picture}(150,100)
+\thicklines
+
+\put(5,85){B}
+\put(9,88){\circle{17}}
+
+\put(12,80){\vector(2,-3){13}}
+
+\put(45,85){E}
+\put(49,88){\circle{17}}
+
+\put(46,80){\vector(-2,-3){13}}
+
+\put(25,50){A}
+\put(29,53){\circle{17}}
+
+\put(26,45){\vector(-2,-3){13}}
+\put(32,45){\vector(2,-3){13}}
+
+\put(5,15){J}
+\put(9,18){\circle{17}}
+
+\put(45,15){M}
+\put(49,18){\circle{17}}
+
+\put(80,80){B = burglary}
+\put(80,65){E = earthquake}
+\put(80,50){A = alarm went off}
+\put(80,35){J = John was called}
+\put(80,20){M = Mary was called}
+\end{picture}
+\end{center}
+
+\noindent Typically, a computer function would take B and E as the input, and calculate J and M as the output. In this case,
+
+\begin{tabular}{r c l c}
+B and E & are called the & \textbf{evidence} & (known) \\
+J and M & are called the & \textbf{query} & (desired) \\
+A & is & \textbf{hidden} & (required for computations)
+\end{tabular}
+
+\begin{defin}[Posterior Distribution]
+$P(Q_1,Q_2,...|E_1=e_1, E_2=e_2, ...)$. The variables $Q_i$ are called the \emph{\textbf{query variables}}, and the $E_j$ are called the \emph{\textbf{evidence variables}}.
+\end{defin}
+
+We define
+\begin{center}
+$argmax_q P(Q_1=q_1, ... | E_1=e_1, ...)$
+\end{center}
+\noindent to be the combination of values with the highest probability.
+
+\paragraph{Enumeration.} We start with the question, what is $P(+b | +j, +m)$? From the formula for conditional probability, this is equivalent to
+\begin{center}
+$\displaystyle\frac{P(+b,+j,+m)}{P(+j,+m)}$
+\end{center}
+\noindent We then enumerate the atomic probabilities, and calculate the sum of the products.
+\begin{center}
+\begin{align*}
+P(+b,+j,+m) & = \sum_e\sum_aP(+b,+j,+m) \\
+ & = \sum_e\sum_a\underbrace{P(+b)P(e)P(a|+b,e)P(+j|a)P(+m|a)}_{f(e,a)} \\
+ & = f(+e,+a) + f(+e,\neg a) + f(\neg e,+a) + f(\neg e, \neg a).
+\end{align*}
+\end{center}
+\noindent The problem with this method is that it quickly becomes impractical for even moderately-sized networks. $f$ can be optimized somewhat:
+\begin{center}
+$\displaystyle f(e,a) = P(+b)\sum_eP(e)\sum_aP(a|+b,e)P(+j|a)P(+m|a)$
+\end{center}
+\noindent but this is not sufficient.
+
+\paragraph{Maximizing independence.} Consider the following networks:
+
+\begin{center}
+\begin{picture}(250,100)
+\thicklines
+\put(35,90){\underline{Network}}
+\put(150,90){\underline{Time to compute}}
+
+\put(10,70){$x_1$}
+\put(15,72){\circle{17}}
+
+\put(23,72){\line(1,0){13}}
+
+\put(40,70){$x_2$}
+\put(45,72){\circle{17}}
+
+\put(53,72){\line(1,0){13}}
+
+\put(70,70){\dots}
+
+\put(83,72){\line(1,0){13}}
+
+\put(100,70){$x_n$}
+\put(105,72){\circle{17}}
+
+\put(180,70){$O(n)$}
+
+
+\put(10,20){$x_1$}
+\put(15,22){\circle{17}}
+
+\put(23,22){\line(1,0){13}}
+\qbezier(21,28)(30,32)(38,28)
+\qbezier(20,30)(50,40)(72,26)
+\qbezier(18,31)(60,50)(98,28)
+
+\put(40,20){$x_2$}
+\put(45,22){\circle{17}}
+
+\put(53,22){\line(1,0){13}}
+\qbezier(51,17)(60,12)(72,17)
+\qbezier(49,15)(75,0)(99,16)
+
+\put(70,20){\dots}
+
+\put(83,22){\line(1,0){13}}
+\qbezier(76,17)(86,10)(97,18)
+
+\put(100,20){$x_n$}
+\put(105,22){\circle{17}}
+
+\put(180,20){$O(2^n)$}
+
+\end{picture}
+\end{center}
+
+\noindent In the first network, there is only one edge between each node. In the second, every node has an edge with every other node. This gives us bounds for best- and worst-case run-time.
+
+Bayes networks are the easiest to use when they are directed in the \textbf{causal direction}, i.e. when the network flows from causes to effects.
+
+\paragraph{Variable elimination.} Another way to optimize $f$ that is faster than enumeration, is the following. Consider the follwing network:
+
+\begin{center}
+\begin{picture}(100,25)
+\thicklines
+
+\put(10,10){$R$}
+\put(15,13){\circle{17}}
+
+\put(23,13){\vector(1,0){13}}
+
+\put(40,10){$T$}
+\put(45,13){\circle{17}}
+
+\put(53,13){\vector(1,0){13}}
+
+\put(70,10){$L$}
+\put(75,13){\circle{17}}
+
+\end{picture}
+\end{center}
+
+\noindent where $R$ represents rain, $T$ represents heavy traffic, and $L$ represents the student being late to class. We know the probabilities $P(R)$, $P(T|R)$, and $P(L|T)$, for all possible values $r$, $t$, and $l$. We perform the following steps:
+
+\begin{enumerate}
+\item \textbf{Joining factors}: combine $R$ and $T$ into $P(R,T) = P(T|R)P(R)$
+\item Sum over $R$ to eliminate $R$, leaving $T$:
+\begin{align*}
+P(+t) & = P(+t,+r) + P(+t,\neg r) \\
+P(\neg t) & = P(\neg t,+r) + P(\neg t, \neg r)
+\end{align*}
+\item Join the factors $T$ and $L$.
+\item Sum over $T$ to elimnate $T$, leaving $L$.
+\end{enumerate}
 
 \end{document}
