@@ -873,4 +873,83 @@ P(\neg t) & = P(\neg t,+r) + P(\neg t, \neg r)
 \item Sum over $T$ to elimnate $T$, leaving $L$.
 \end{enumerate}
 
+%===============================================================================
+
+\part{Machine Learning}
+
+In previous sections, we discussed Bayes networks, which involve \underline{reasoning with known models}. Machine learning involves \underline{determining the model from the given data}. Machine learning has been used by many companies, for many reasons, including
+\begin{itemize_packed}
+\item \textbf{Google} for web mining
+\item \textbf{Netflix} for creating DVD recommendations
+\item \textbf{Amazon} for product placement
+\end{itemize_packed}
+
+\noindent Professor Thrun's team has used machine learning to win the DARPA Grand Challenge, where a car equipped with sensors was able to follow a road through rough terrain.
+
+Machine learning can be summarized with the following points.
+\begin{itemize_packed}
+\item \textbf{What?}
+\begin{itemize_packed}
+\item parameters, e.g. the probabilities of a Bayes network
+\item structure, e.g. the arcs in a Bayes network
+\item hidden concepts, e.g. hidden concepts that can help interpret data
+\end{itemize_packed}
+
+\item \textbf{What from?}
+\begin{itemize_packed}
+\item supervised, where we are given specific target labels
+\item unsupervised, where target labels are missing
+\item reinforcement, where an agent tries things and gets feedback from the environment about their success
+\end{itemize_packed}
+
+\item \textbf{What for?}
+\begin{itemize_packed}
+\item prediction, i.e. what will happen in the future
+\item diagnostics, i.e. find an explanation for the data
+\item summarization, e.g. of an article
+\end{itemize_packed}
+
+\item \textbf{How}
+\begin{itemize_packed}
+\item passive, where the agent is an observer that does not affect the data
+\item active
+\item online, i.e. while the data is being generated
+\item offline, i.e. after the data has been generated
+\end{itemize_packed}
+
+\item \textbf{Outputs?}
+\begin{itemize_packed}
+\item classification, where the output is discrete (e.g., is an object a chair)
+\item regression, where the output is continuous (e.g., temperature)
+\end{itemize_packed}
+
+\item \textbf{Details?}
+\begin{itemize_packed}
+\item generative, which seeks to model the data as generally as possible
+\item discriminative, which seeks to distinguish data
+\end{itemize_packed}
+
+\end{itemize_packed}
+
+\section{Supervised Learning}
+
+In supervised learning, for each training example we are given a feature vector, and a target label indicating the output for that vector.
+\begin{center}
+$x_1 x_2 \dots x_n \rightarrow y$
+\end{center}
+For example, the $x_i$ might indicate if a person is employed, their salary, if they have previously defaulted, etc., and $y$ predicts if the person will default on a new line of credit. The goal is to produce a function that will predict the correct value of $y$ for future customers. Typically, we are given several examples:
+\begin{center}
+$\begin{bmatrix}
+x_{11} & x_{12} & \dots & x_{1N} & \rightarrow & y_1 \\
+x_{21} & x_{22} & \dots & x_{2N} & \rightarrow & y_2 \\
+\vdots & & & & & \vdots \\
+x_{M1} & x_{M2} & \dots & x_{MN} & \rightarrow & y_M
+\end{bmatrix}$
+data
+\end{center}
+where the vector $\left(x_{i1}, \dots, x_{iN}\right)$ can be represented simply by $x_i$. The goal is to find a function $f$ that, for any future vector $x_m$, will give a value $y_m$ with minimal error.
+\begin{center}
+$f(x_m) = y_m$
+\end{center}
+
 \end{document}
