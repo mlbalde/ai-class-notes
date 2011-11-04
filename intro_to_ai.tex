@@ -952,4 +952,58 @@ where the vector $\left(x_{i1}, \dots, x_{iN}\right)$ can be represented simply 
 $f(x_m) = y_m$
 \end{center}
 
+\section{Spam detection}
+
+The goal of spam detection is to determine if an e-mail is \textbf{spam} (junk) or \textbf{ham} (acceptable). One simple way to represent e-mails is with a bag of words. A \textbf{bag of words} is a map that maintains, for each word in the dictionary, a count of the number of occurrences of that word in the data.
+
+\paragraph{Example:} Suppose we have the following data:
+\begin{center}
+\begin{tabular}{l l}
+\quad \underline{SPAM} & \quad \underline{HAM} \\
+offer is secret & play sports today \\
+click secret link & went play sports \\
+secret sports link & secret sports event \\
+ & sport is today \\
+ & sport costs money
+\end{tabular}
+\end{center}
+The dictionary for this example contains 12 words. With this data, we can calculate the probability that a new message will be spam to be $\frac{3}{8}$ using maximum likelihood.
+
+\section{Maximum Likelihood}
+
+In the previous example, our data could be represented as
+\begin{center}
+$SSSHHHHH$.
+\end{center}
+We wish to discover the value for the prior probability $p(S) = \pi$ that a message is spam, that maximizes the probability of seeing our data (assuming each e-mail is drawn independently according to an identical distribution). In other words, we want
+\begin{center}
+$p(y_i) =
+\begin{cases}
+\pi & \text{if } y_i = S \\
+1 - \pi & \text{if } y_i = H
+\end{cases}$
+\end{center}
+If we re-write our data as $11100000$, then we could write
+\begin{center}
+$p(y_i) = \pi^{y_i} (1-\pi)^{1 - y_i}$
+\end{center}
+Assuming independence, we then have
+\begin{center}
+$p(data) = \displaystyle\prod_{i=1}^8 p(y_i) = \pi^{count(y_i=1)}(1-\pi)^{count(y_i = 0)} = \pi^3(1-\pi)^5$
+\end{center}
+Maximizing $p(data)$ is equivalent to maximizing the logarithm of $p(data)$; thus, we calculate
+\begin{center}
+$\log_p(data) = 3\log\pi + 5\log(1-\pi)$
+\end{center}
+The maximum is attained when the derivative is zero. We may thus calculate
+\begin{center}
+\begin{align*}
+\displaystyle\frac{\mathrm{d}\log p(data)}{\mathrm{d}\pi} & = 0 \\
+\frac{3}{\pi} - \frac{5}{1-\pi} & = 0 \\
+\frac{3}{\pi} & = \frac{5}{1-\pi} \\
+5\pi + 3\pi & = 3 \\
+\pi & = \frac{3}{8}
+\end{align*}
+\end{center}
+
 \end{document}
