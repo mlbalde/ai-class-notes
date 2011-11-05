@@ -9,6 +9,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{multicol}
+\usepackage{multirow}
 
 \newtheorem{defin}{Definition}
 \newtheorem{ex}{Example}
@@ -1005,5 +1006,142 @@ The maximum is attained when the derivative is zero. We may thus calculate
 \pi & = \frac{3}{8}
 \end{align*}
 \end{center}
+
+%===============================================================================
+
+\part{Unsupervised Learning}
+
+%===============================================================================
+
+\part{Representation with Logic}
+
+\section{Propositional Logic}
+
+Suppose we have the symbols $B$, $E$, $A$, $M$, and $J$, representing the events from the burglary example. As in the probabilistic models, they can be true or false. However, when representing with logic, our belief in what the values are, is either true, false, or unknown. We express these beliefs using logical sentences. For example, we could write
+\begin{center}
+$(E\lor B)\implies A$
+\end{center}
+to mean, "whenever there is an earthquake or a burglary, then the alarm goes off." We could also write
+\begin{center}
+$A \implies (J\land M)$
+\end{center}
+to mean, "if the alarm goes off, then both John and Mary will call."
+
+Using propositional logic, a model of the world is a set of truth values for the variables. For example,
+\begin{center}
+$\left\{E = true, B = false, ...\right\}$.
+\end{center}
+A \textbf{truth table} can be used to list all values for all our logical statements. For example,
+\begin{center}
+\begin{tabular}{| c | c || c | c | c | c | c |}
+\hline
+$P$ & $Q$ &  $\neg P$ & $P\land Q$ & $P\lor Q$ & $P\Rightarrow Q$ & $P\Leftrightarrow Q$\\
+\hline
+false & false & true & false & false & true & true \\
+false & true & true & false & true & true & false \\
+true & false & false & false & true & false & false \\
+true & true & false & true & true & true & true \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{defin}[Valid]
+A \emph{\textbf{valid}} sentence is one that is true in every possible model, for every combination of values of the propositional symbols.
+\end{defin}
+
+\begin{defin}[Satisfiable]
+A \emph{\textbf{satisfiable}} sentence is one that is true in \underline{some} (but not necessarily all) models. A sentence that is false for all models is \emph{\textbf{unsatisfiable}}.
+\end{defin}
+
+\paragraph{Examples.}
+\begin{center}
+\begin{tabular}{c c}
+\textbf{Sentence} & \textbf{Type} \\
+\hline
+$P\lor\neg P$ & valid \\
+$P\land\neg P$ & unsatisfiable \\
+$P\lor Q\lor (P\iff Q)$ & valid \\
+$(P\Rightarrow Q) \lor (Q\Rightarrow P)$ & valid \\
+$\big((food\Rightarrow party)\lor (drinks\Rightarrow party)\big) \Rightarrow ((food\land drinks)\Rightarrow party)$ & valid
+\end{tabular}
+\end{center}
+
+\paragraph{Limitations of propositional logic.}
+\begin{itemize_packed}
+\item It is not capable of handling uncertainty.
+\item It can only handle events that are true or false; no objects, properties of objects, etc.
+\item There are no "shortcuts." For example, if we wish to model a vacuum cleaner and say that 1000 locations are all clean, we would need a conjunction including all 1000 locations.
+\end{itemize_packed}
+First-order logic addresses the last two limitations.
+
+\section{First-order logic}
+
+The differences between the three main types of logic we have seen are summarized in the following table.
+\begin{center}
+\begin{tabular}{l | c | c |}
+\cline{2-3}
+& World & Beliefs \\
+& (Ontology) & (Epistemology) \\
+\hline
+\multicolumn{1}{|l|}{First-order logic} & Relationships, Objects, Functions & \multirow{2}{*}{True/False/Unknown} \\
+\cline{1-2}
+\multicolumn{1}{|l|}{Propositional Logic} & \multirow{2}{*}{Facts} & \\
+\cline{1-1} \cline{3-3}
+\multicolumn{1}{|l|}{Probability Theory} & & $[0,1]$ \\
+\hline
+\end{tabular}
+\end{center}
+
+There are three main ways to represent the world.
+\begin{itemize_packed}
+\item An \textbf{atomic} representation considers the world to be a single object, without attempting to represent its internal structure. This is the representation that was used for search and problem solving: we considered the world to be a single state, about which we knew some basic information (like whether a state was a goal), but without knowing any of the states' internal structure.
+\item A \textbf{factored} representation represents a single world-state as several variables.
+\item A \textbf{structured} representation considers a state to be not simply a set of values of different variables, but can also include relationships between objects, branching structures, etc. Databases and programming languages are two examples.
+\end{itemize_packed}
+
+Consider the following example:
+\begin{center}
+\begin{picture}(50,40)
+\put(0,5){\fbox{$B_3$}}
+\put(30,5){\fbox{$D_2$}}
+\put(0,30){\fbox{$A_1$}}
+\put(30,30){\fbox{$C_3$}}
+\end{picture}
+\end{center}
+Using first-order logic, we have the following tools at our disposal:
+\begin{itemize_packed}
+\item \textbf{Constants}. ${A,B,C,D,1,2,3,cee}$. Note that it is not necessary to have a 1-1 correspondance between constants and objects; in this example, we have two constants that refer to the same letter.
+\item \textbf{Functions}. For example, $numberof = \left\{A\rightarrow 1, B\rightarrow 3, C\rightarrow 3, D\rightarrow 2\right\}$.
+\item \textbf{Relations}. A relation is a set of tuples for which the relation holds. Relations can be
+\begin{itemize_packed}
+\item \textbf{binary}, e.g. $above: \{ [A,B], [C,D] \}$
+\item \textbf{unary}, e.g. $vowel: \{ [A] \}$
+\item \textbf{0-ary}. In this case, the relation simply states something about the world in general, e.g. $rainy$, which could be $\{\}$ for false, or $\{[]\}$ for true.
+\end{itemize_packed}
+\end{itemize_packed}
+
+\paragraph{Syntax.}
+\begin{itemize_packed}
+\item \textbf{Sentences} describe facts that are true or false (i.e. relations). For example, $vowel(A)$, $above(A,B)$, $2=2$ (note that the equality relation is always present).
+\item \textbf{Operators} create new sentences by combining relations. These are the operators from propositional logic: $\land$, $lor$, $neg$, $\implies$, $\iff$, and $()$.
+\item \textbf{Terms} refer to constants. They can be constants (typically in upper-case), variables (typically in lowercase), or functions.
+\item \textbf{Quantifiers} are the symbols $\forall$ ("for all") and $\exists$ ("there exists"). They are used to add meaning to sentences. For example, $\forall x\quad vowel(x)\Rightarrow numberof(x) = 1$ and $\exists x\quad numberof(x)=2$. Note that, if a quantifier is omitted, "for all" is assumed.
+\end{itemize_packed}
+
+\paragraph{Examples.}
+\begin{center}
+\begin{tabular}{c c}
+\textbf{Sentence} & \textbf{Type} \\
+\hline
+$\exists x,y \quad x=y$ & valid \\
+$\left(\exists x \; X=x\right) \implies \left(\forall y \exists z \; y=z\right)$ & valid \\
+$\forall x\quad P(x) \lor \neg P(x)$ & valid \\
+$\exists x\quad P(x)$ & satisfiable
+\end{tabular}
+\end{center}
+
+%===============================================================================
+
+\part{Planning}
 
 \end{document}
