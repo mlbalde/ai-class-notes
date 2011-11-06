@@ -42,6 +42,53 @@
 \put(30,50){\line(0,-1){50}}
 }
 
+% Draws the little vacuum cleaner. Dimensions: 28x20
+\newsavebox{\vacuum}
+\savebox{\vacuum}{
+\thicklines
+\qbezier(20,10)(24,20)(28,10)
+\put(20,10){\line(0,-1){7}}
+\put(28,10){\line(0,-1){7}}
+\put(22,2){\circle{4}}
+\put(26,2){\circle{4}}
+\put(20,11){\line(-2,-1){14}}
+\put(20,9){\line(-2,-1){10}}
+\put(0,1){\framebox(15,3)}
+}
+
+% Draws dirt for the vacuum cleaner. Dimensions: 11x9
+\newsavebox{\dirt}
+\savebox{\dirt}{
+\thicklines
+\put(2,2){\circle{4}}
+\put(5,3){\circle{4}}
+\put(9,2){\circle{3}}
+\put(4,6){\circle{5}}
+\put(8,5){\circle{4}}
+}
+
+% Various boxes for the vacuum cleaner, with/without dirt. Dimensions: 32x33
+\newsavebox{\vacVD}
+\newsavebox{\vacV}
+\newsavebox{\vacD}
+\newsavebox{\vac}
+\savebox{\vac}{
+\put(0,0){\framebox(32,33)}
+}
+\savebox{\vacV}{
+\put(0,0){\usebox{\vac}}
+\put(2,14){\usebox{\vacuum}}
+}
+\savebox{\vacD}{
+\put(0,0){\usebox{\vac}}
+\put(4,2){\usebox{\dirt}}
+}
+\savebox{\vacVD}{
+\put(0,0){\usebox{\vac}}
+\put(2,14){\usebox{\vacuum}}
+\put(4,2){\usebox{\dirt}}
+}
+
 \newenvironment{itemize_packed}{
 \begin{itemize}
 \setlength{\itemsep}{0pt}
@@ -1110,7 +1157,7 @@ Consider the following example:
 \end{center}
 Using first-order logic, we have the following tools at our disposal:
 \begin{itemize_packed}
-\item \textbf{Constants}. ${A,B,C,D,1,2,3,cee}$. Note that it is not necessary to have a 1-1 correspondance between constants and objects; in this example, we have two constants that refer to the same letter.
+\item \textbf{Constants}. $\{A,B,C,D,1,2,3,cee\}$. Note that it is not necessary to have a 1-1 correspondance between constants and objects; in this example, we have two constants that refer to the same letter.
 \item \textbf{Functions}. For example, $numberof = \left\{A\rightarrow 1, B\rightarrow 3, C\rightarrow 3, D\rightarrow 2\right\}$.
 \item \textbf{Relations}. A relation is a set of tuples for which the relation holds. Relations can be
 \begin{itemize_packed}
@@ -1143,5 +1190,31 @@ $\exists x\quad P(x)$ & satisfiable
 %===============================================================================
 
 \part{Planning}
+
+Previously, problem solving was used to find a path to a goal. This only works when the environment is deterministic and fully observable. In this unit, we will learn how to relax those constraints.
+
+In certain cases, it is important to interleave steps of \textbf{planning} (i.e., looking at the current state and deciding on the path to take) and \textbf{execution}. These situations include
+\begin{itemize_packed}
+\item \underline{stochastic environments}, where the outcome of an action is not always guaranteed. For example, the wheels on a car might slip, or a traffic light might change color, etc.
+\item \underline{multi-agent environments}, where another agent's behavior is unknown.
+\item \underline{partially-observable environments}. In this case, there may be unknown obstacles that are encountered along the way.
+\item an \underline{unknown model} of the world
+\item \underline{hierarchical plans}. For example, the plan to drive from city A to city B does not include the low-level details of actually making the trip, such as turning the steering wheel, using the brakes, etc. These details must be addressed at execution.
+\end{itemize_packed}
+A solution to these problems is to work with belief states instead of actual states.
+
+\begin{defin}
+When the exact state of the world is unknown, the list of all possible states is called the \emph{\textbf{belief state}}.
+\end{defin}
+
+\begin{center}
+\begin{picture}(300,200)
+%TODO: draw belief states for sensorless vacuum example
+\put(100,100){\usebox{\vacVD}}
+\put(132,100){\usebox{\vacV}}
+\put(164,100){\usebox{\vacD}}
+\put(196,100){\usebox{\vac}}
+\end{picture}
+\end{center}
 
 \end{document}
