@@ -141,7 +141,11 @@
 \put(15,0){\usebox{\vac}}
 \put(48,0){\usebox{\vacV}}
 }
+% For nothing
+\newsavebox{\vacempty}
+\savebox{\vacempty}{}
 
+% Boxes to hold multiple belief states
 \newcommand{\vacBoxEight}{
 \framebox(120,60){
 \put(-57,40){\usebox{\vacone}}
@@ -152,17 +156,26 @@
 \put(23,20){\usebox{\vacsix}}
 \put(-57,0){\usebox{\vacseven}}
 \put(-17,0){\usebox{\vaceight}}
-}
-}
+}}
 \newcommand{\vacBoxFour}[4]{
 \framebox(80,40){
 \put(-37,20){\usebox{#1}}
 \put(3,20){\usebox{#2}}
 \put(-37,0){\usebox{#3}}
 \put(3,0){\usebox{#4}}
-}
-}
+}}
+\newcommand{\vacBoxTwo}[2]{
+\framebox(40,40){
+\put(-17,20){\usebox{#1}}
+\put(-17,0){\usebox{#2}}
+}}
+\newcommand{\vacBoxOne}[1]{
+\framebox(40,20){
+\put(-17,0){\usebox{#1}}
+}}
 
+
+\setlength{\unitlength}{1pt}
 
 % Makes a list with no extra space between the lines.
 \newenvironment{itemize_packed}{
@@ -1287,22 +1300,57 @@ When the exact state of the world is unknown, the list of all possible states is
 
 In this example, there are 8 possible world states. However, suppose the sensors on our robot are broken, and we thus know nothing about the world. We can only model our current state as a single belief state comprising all 8 possible world states. However, we can narrow down the possible world states by eliminating possibilities when an action is performed - for example, if we perform the action "move left," then we know that the robot is in the left square, thus eliminating 4 states. The following diagram illustrates the resulting belief state space.
 
-\begin{picture}(100,1000)
-\setlength{\unitlength}{1pt}
-\put(0,0){\framebox(300,420)}
-% Count 40x20 for each state
+\begin{picture}(300,310)
+\put(0,0){\framebox(300,310)}
 
 % Initial state
-\put(100,300){\vacBoxEight}
+\put(100,230){\vacBoxEight}
+\put(103,260){\vector(-1,0){19}}
+\put(92,262){L}
+\put(224,260){\vector(1,0){19}}
+\put(230,262){R}
+
 
 % Move L from initial
-\put(0,300){\vacBoxFour{\vacone}{\vacthree}{\vacfive}{\vacseven}}
+\put(0,240){\vacBoxFour{\vacone}{\vacthree}{\vacfive}{\vacseven}}
+\put(70,280){\line(0,1){20}}
+\put(70,300){\line(1,0){180}}
+\put(250,300){\vector(0,-1){20}}
+\put(72,288){R}
 
 % Move R from initial
-\put(240,300){\vacBoxFour{\vactwo}{\vacfour}{\vacsix}{\vaceight}}
+\put(240,240){\vacBoxFour{\vactwo}{\vacfour}{\vacsix}{\vaceight}}
+\put(260,280){\line(0,1){30}}
+\put(260,310){\line(-1,0){200}}
+\put(60,310){\vector(0,-1){30}}
+\put(262,288){L}
 
 % Suck from initial
-\put(120,240){\vacBoxFour{\vacfour}{\vacfive}{\vacseven}{\vaceight}}
+\put(120,160){\vacBoxFour{\vacfour}{\vacfive}{\vacseven}{\vaceight}}
+
+% L->S
+\put(0,80){\vacBoxTwo{\vacfive}{\vacseven}}
+
+% S->L
+\put(65,80){\vacBoxFour{\vacfive}{\vacthree}{\vacseven}{\vacempty}}
+
+% S->R
+\put(175,80){\vacBoxFour{\vacsix}{\vacfour}{\vaceight}{\vacempty}}
+
+% R->S
+\put(280,80){\vacBoxTwo{\vacfour}{\vaceight}}
+
+% L->S->R
+\put(0,0){\vacBoxTwo{\vacsix}{\vaceight}}
+
+% L->S->R->S
+\put(80,10){\vacBoxOne{\vaceight}}
+
+% R->S->L->S
+\put(190,10){\vacBoxOne{\vacseven}}
+
+% R->S->L
+\put(280,0){\vacBoxTwo{\vacthree}{\vacseven}}
 
 \end{picture}
 
