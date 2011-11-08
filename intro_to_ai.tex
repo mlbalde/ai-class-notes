@@ -42,22 +42,25 @@
 \put(30,50){\line(0,-1){50}}
 }
 
+%--- Vacuum cleaner ---------------------------------------------%
+
 % Draws the little vacuum cleaner. Dimensions: 28x20
 \newsavebox{\vacuum}
 \savebox{\vacuum}{
-\thicklines
+\setlength{\unitlength}{0.15mm}
 \qbezier(20,10)(24,20)(28,10)
 \put(20,10){\line(0,-1){7}}
 \put(28,10){\line(0,-1){7}}
 \put(22,2){\circle{4}}
 \put(26,2){\circle{4}}
-\put(20,11){\line(-2,-1){14}}
-\put(20,9){\line(-2,-1){10}}
+\qbezier(9,5)(15,6)(20,8)
+\qbezier(5,5)(14,8)(20,10)
 \put(0,1){\framebox(15,3)}
 }
 
 % Draws dirt for the vacuum cleaner. Dimensions: 11x9
 \newsavebox{\dirt}
+\setlength{\unitlength}{0.15mm}
 \savebox{\dirt}{
 \thicklines
 \put(2,2){\circle{4}}
@@ -89,6 +92,79 @@
 \put(4,2){\usebox{\dirt}}
 }
 
+% The 8 possible states for the vacuum cleaner world.
+\newsavebox{\vacone}
+\newsavebox{\vactwo}
+\newsavebox{\vacthree}
+\newsavebox{\vacfour}
+\newsavebox{\vacfive}
+\newsavebox{\vacsix}
+\newsavebox{\vacseven}
+\newsavebox{\vaceight}
+\savebox{\vacone}{
+\put(0,9){1}
+\put(15,0){\usebox{\vacVD}}
+\put(48,0){\usebox{\vacD}}
+}
+\savebox{\vactwo}{
+\put(0,9){2}
+\put(15,0){\usebox{\vacD}}
+\put(48,0){\usebox{\vacVD}}
+}
+\savebox{\vacthree}{
+\put(0,9){3}
+\put(15,0){\usebox{\vacVD}}
+\put(48,0){\usebox{\vac}}
+}
+\savebox{\vacfour}{
+\put(0,9){4}
+\put(15,0){\usebox{\vacD}}
+\put(48,0){\usebox{\vacV}}
+}
+\savebox{\vacfive}{
+\put(0,9){5}
+\put(15,0){\usebox{\vacV}}
+\put(48,0){\usebox{\vacD}}
+}
+\savebox{\vacsix}{
+\put(0,9){6}
+\put(15,0){\usebox{\vac}}
+\put(48,0){\usebox{\vacVD}}
+}
+\savebox{\vacseven}{
+\put(0,9){7}
+\put(15,0){\usebox{\vacV}}
+\put(48,0){\usebox{\vac}}
+}
+\savebox{\vaceight}{
+\put(0,9){8}
+\put(15,0){\usebox{\vac}}
+\put(48,0){\usebox{\vacV}}
+}
+
+\newcommand{\vacBoxEight}{
+\framebox(120,60){
+\put(-57,40){\usebox{\vacone}}
+\put(-17,40){\usebox{\vactwo}}
+\put(23,40){\usebox{\vacthree}}
+\put(-57,20){\usebox{\vacfour}}
+\put(-17,20){\usebox{\vacfive}}
+\put(23,20){\usebox{\vacsix}}
+\put(-57,0){\usebox{\vacseven}}
+\put(-17,0){\usebox{\vaceight}}
+}
+}
+\newcommand{\vacBoxFour}[4]{
+\framebox(80,40){
+\put(-37,20){\usebox{#1}}
+\put(3,20){\usebox{#2}}
+\put(-37,0){\usebox{#3}}
+\put(3,0){\usebox{#4}}
+}
+}
+
+
+% Makes a list with no extra space between the lines.
 \newenvironment{itemize_packed}{
 \begin{itemize}
 \setlength{\itemsep}{0pt}
@@ -1201,20 +1277,33 @@ In certain cases, it is important to interleave steps of \textbf{planning} (i.e.
 \item an \underline{unknown model} of the world
 \item \underline{hierarchical plans}. For example, the plan to drive from city A to city B does not include the low-level details of actually making the trip, such as turning the steering wheel, using the brakes, etc. These details must be addressed at execution.
 \end{itemize_packed}
-A solution to these problems is to work with belief states instead of actual states.
+A solution to these problems is to plan in the space of belief states instead of world states.
 
 \begin{defin}
 When the exact state of the world is unknown, the list of all possible states is called the \emph{\textbf{belief state}}.
 \end{defin}
 
-\begin{center}
-\begin{picture}(300,200)
-%TODO: draw belief states for sensorless vacuum example
-\put(100,100){\usebox{\vacVD}}
-\put(132,100){\usebox{\vacV}}
-\put(164,100){\usebox{\vacD}}
-\put(196,100){\usebox{\vac}}
+\paragraph{Example.} Suppose we wish to model a simple world for a robotic vacuum cleaner. The world only has two positions, left and right. Each position can either have dirt, or not. The robot is in one of the two positions.
+
+In this example, there are 8 possible world states. However, suppose the sensors on our robot are broken, and we thus know nothing about the world. We can only model our current state as a single belief state comprising all 8 possible world states. However, we can narrow down the possible world states by eliminating possibilities when an action is performed - for example, if we perform the action "move left," then we know that the robot is in the left square, thus eliminating 4 states. The following diagram illustrates the resulting belief state space.
+
+\begin{picture}(100,1000)
+\setlength{\unitlength}{1pt}
+\put(0,0){\framebox(300,420)}
+% Count 40x20 for each state
+
+% Initial state
+\put(100,300){\vacBoxEight}
+
+% Move L from initial
+\put(0,300){\vacBoxFour{\vacone}{\vacthree}{\vacfive}{\vacseven}}
+
+% Move R from initial
+\put(240,300){\vacBoxFour{\vactwo}{\vacfour}{\vacsix}{\vaceight}}
+
+% Suck from initial
+\put(120,240){\vacBoxFour{\vacfour}{\vacfive}{\vacseven}{\vaceight}}
+
 \end{picture}
-\end{center}
 
 \end{document}
