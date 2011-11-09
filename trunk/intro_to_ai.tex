@@ -1300,58 +1300,133 @@ When the exact state of the world is unknown, the list of all possible states is
 
 In this example, there are 8 possible world states. However, suppose the sensors on our robot are broken, and we thus know nothing about the world. We can only model our current state as a single belief state comprising all 8 possible world states. However, we can narrow down the possible world states by eliminating possibilities when an action is performed - for example, if we perform the action "move left," then we know that the robot is in the left square, thus eliminating 4 states. The following diagram illustrates the resulting belief state space.
 
-\begin{picture}(300,310)
-\put(0,0){\framebox(300,310)}
+\begin{picture}(300,280)
+\thicklines
 
 % Initial state
-\put(100,230){\vacBoxEight}
-\put(103,260){\vector(-1,0){19}}
-\put(92,262){L}
-\put(224,260){\vector(1,0){19}}
-\put(230,262){R}
+\put(100,190){\vacBoxEight}
+\put(103,220){\vector(-1,0){19}}
+\put(92,222){L}
+\put(224,220){\vector(1,0){19}}
+\put(230,222){R}
+\put(160,190){\vector(0,-1){20}}
+\put(162,177){S}
 
 
 % Move L from initial
-\put(0,240){\vacBoxFour{\vacone}{\vacthree}{\vacfive}{\vacseven}}
-\put(70,280){\line(0,1){20}}
-\put(70,300){\line(1,0){180}}
-\put(250,300){\vector(0,-1){20}}
-\put(72,288){R}
+\put(0,200){\vacBoxFour{\vacone}{\vacthree}{\vacfive}{\vacseven}}
+\put(70,240){\line(0,1){20}}
+\put(70,260){\line(1,0){180}}
+\put(250,260){\vector(0,-1){20}}
+\put(72,248){R}
+\put(20,200){\vector(0,-1){90}}
+\put(22,140){S}
 
 % Move R from initial
-\put(240,240){\vacBoxFour{\vactwo}{\vacfour}{\vacsix}{\vaceight}}
-\put(260,280){\line(0,1){30}}
-\put(260,310){\line(-1,0){200}}
-\put(60,310){\vector(0,-1){30}}
-\put(262,288){L}
+\put(240,200){\vacBoxFour{\vactwo}{\vacfour}{\vacsix}{\vaceight}}
+\put(260,240){\line(0,1){30}}
+\put(260,270){\line(-1,0){200}}
+\put(60,270){\vector(0,-1){30}}
+\put(262,248){L}
+\put(310,200){\vector(0,-1){90}}
+\put(312,140){S}
 
 % Suck from initial
-\put(120,160){\vacBoxFour{\vacfour}{\vacfive}{\vacseven}{\vaceight}}
+\put(120,130){\vacBoxFour{\vacfour}{\vacfive}{\vacseven}{\vaceight}}
+\put(130,130){\vector(0,-1){20}}
+\put(120,117){L}
+\put(190,130){\vector(0,-1){20}}
+\put(192,117){R}
 
 % L->S
-\put(0,80){\vacBoxTwo{\vacfive}{\vacseven}}
+\put(0,70){\vacBoxTwo{\vacfive}{\vacseven}}
+\put(10,70){\vector(0,-1){30}}
+\put(0,50){R}
 
 % S->L
-\put(65,80){\vacBoxFour{\vacfive}{\vacthree}{\vacseven}{\vacempty}}
+\put(65,70){\vacBoxFour{\vacfive}{\vacthree}{\vacseven}{\vacempty}}
+\put(67,90){\vector(-1,0){23}}
+\put(55,92){S}
+\put(148,80){\vector(1,0){29}}
+\put(158,70){R}
 
 % S->R
-\put(175,80){\vacBoxFour{\vacsix}{\vacfour}{\vaceight}{\vacempty}}
+\put(175,70){\vacBoxFour{\vacsix}{\vacfour}{\vaceight}{\vacempty}}
+\put(178,100){\vector(-1,0){29}}
+\put(158,102){L}
+\put(258,90){\vector(1,0){25}}
+\put(265,92){S}
 
 % R->S
-\put(280,80){\vacBoxTwo{\vacfour}{\vaceight}}
+\put(280,70){\vacBoxTwo{\vacfour}{\vaceight}}
+\put(295,70){\vector(0,-1){30}}
+\put(285,50){L}
 
 % L->S->R
 \put(0,0){\vacBoxTwo{\vacsix}{\vaceight}}
+\put(30,40){\vector(0,1){30}}
+\put(32,50){L}
+\put(43,20){\vector(1,0){40}}
+\put(58,22){S}
 
 % L->S->R->S
 \put(80,10){\vacBoxOne{\vaceight}}
+\put(123,25){\vector(1,0){69}}
+\put(157,27){L}
 
 % R->S->L->S
 \put(190,10){\vacBoxOne{\vacseven}}
+\put(193,15){\vector(-1,0){69}}
+\put(157,5){R}
 
 % R->S->L
 \put(280,0){\vacBoxTwo{\vacthree}{\vacseven}}
+\put(315,40){\vector(0,1){30}}
+\put(317,50){R}
+\put(283,20){\vector(-1,0){49}}
+\put(260,22){S}
 
 \end{picture}
+
+\noindent It is clear that, even with no sensors, it would still be possible to plan a sequence of actions that result in removing all dirt from the world.
+
+\begin{defin}A \emph{\textbf{conformant plan}} is a plan that can find a goal without ever sensing anything about the world.
+\end{defin}
+
+\paragraph{Partially-obsevable environments.} Suppose, on the other hand, that the robot vacuum cleaner has \textbf{local} sensors, i.e., it can perceive what side it is on, and whether there is dirt there, but not whether the other square has dirt. If the world is deterministic, actions and observations will never increase the size of the belief state.
+
+On the other hand, if the world is stochastic, an action may \textbf{increase} the size of the belief state. However, an observation will still partition the current belief state, tending to make the resulting states smaller.
+
+For example, suppose that the vacuum cleaner's wheels might slip. We can no longer be certain of the result of moving left or right. We can still plan for this by building a tree of belief states; however, we need to introduce \textbf{branches} to account for the fact that an action might not have any result.
+
+\begin{center}
+\begin{picture}(130,30)
+\thicklines
+\put(0,20){\framebox(10,10)}
+\put(10,25){\vector(1,0){20}}
+\put(15,27){S}
+
+\put(30,20){\framebox(10,10)}
+\put(40,25){\vector(1,0){20}}
+\put(45,27){R}
+
+\put(65,25){\circle{10}}
+\qbezier(65,20)(65,10)(55,15)
+\put(55,15){\vector(-4,1){15}}
+\put(48,5){A}
+\put(70,25){\vector(1,0){20}}
+\put(75,27){B}
+\qbezier(65,16)(74,17)(75,25)
+
+\put(90,20){\framebox(10,10)}
+\put(100,25){\vector(1,0){20}}
+\put(105,27){S}
+
+\put(120,20){\framebox(10,10)}
+\end{picture}
+\end{center}
+\begin{center}
+[S, while A:R, S]
+\end{center}
 
 \end{document}
