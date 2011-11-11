@@ -10,6 +10,7 @@
 \usepackage{algorithmic}
 \usepackage{multicol}
 \usepackage{multirow}
+\usepackage{qtree}
 
 \newtheorem{defin}{Definition}
 \newtheorem{ex}{Example}
@@ -1426,7 +1427,229 @@ For example, suppose that the vacuum cleaner's wheels might slip. We can no long
 \end{picture}
 \end{center}
 \begin{center}
-[S, while A:R, S]
+plan: [S, while A:R, S]
 \end{center}
+
+%===============================================================================
+
+\part{Planning under uncertainty}
+
+The following table represents the subjects that will be covered:
+\begin{center}
+\begin{tabular}{c|c|c|}
+& Deterministic & Stochastic \\
+\hline
+Fully & A*, Depth-first, & MDP \\
+Observable & Breadth-first & \\
+\hline
+Partially & & POMDP \\
+Observable & &\\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Markov Decision Process (MDP)}
+
+MDPs are generally defined using
+\begin{itemize_packed}
+\item states $s_1,\dots,s_N$
+\item actions $a_1,\dots,a_K$
+\item a state transition matrix $T(s,a,s') = P(s'|a,s)$ giving the probability of an outcome for a given action from a given state
+\item a reward function $R(s)$ which serves to provide a "goal" for the MDP
+\end{itemize_packed}
+
+\paragraph{Example.} Suppose we have the following "grid world":
+\begin{center}
+\begin{picture}(100,90)
+\put(0,8){\large{c}}
+\put(0,33){\large{b}}
+\put(0,58){\large{a}}
+\put(20,77){\large{1}}
+\put(45,77){\large{2}}
+\put(70,77){\large{3}}
+\put(95,77){\large{4}}
+\multiput(10,0)(0,25){4}{\line(1,0){100}}
+\multiput(10,0)(25,0){5}{\line(0,1){75}}
+\put(35,25){\rule{25pt}{25pt}}
+\color{red}
+\put(18,6){\Large\textbf{S}}
+\put(87,33){\textbf{-100}}
+\put(90,58){\textbf{100}}
+\end{picture}
+\end{center}
+The agent starts at square \color{red}\textbf{S}\color{black}. The two states with rewards attached are called \textbf{absorbing states}. To make this an MDP, assume that actions are stochastic. Suppose that if the agent attempts to move in a given direction, it has an 80\% chance of succeeding, but a 10\% chance for each of the perpendicular directions. For example, a "North" action results in an 80\% chance of moving North, a 10\% chance of moving West, and a 10\% chance of moving East. Attempting to move to an illegal position will result in the agent remaining where it is.
+
+Clearly, conventional planning would be insufficient in this example, because we cannot be sure of the outcome of our actions.
+
+\begin{defin}[Policy]
+A \emph{\textbf{policy}} is a function $\pi(S)\rightarrow A$ that provides an action for every possible state.
+\end{defin}
+
+A policy for our example problem might look like the following:
+\begin{center}
+\begin{picture}(100,90)
+\put(0,8){\large{c}}
+\put(0,33){\large{b}}
+\put(0,58){\large{a}}
+\put(20,77){\large{1}}
+\put(45,77){\large{2}}
+\put(70,77){\large{3}}
+\put(95,77){\large{4}}
+\multiput(10,0)(0,25){4}{\line(1,0){100}}
+\multiput(10,0)(25,0){5}{\line(0,1){75}}
+\put(35,25){\rule{25pt}{25pt}}
+\color{red}
+\put(18,6){\Large\textbf{S}}
+\put(87,33){\textbf{-100}}
+\put(90,58){\textbf{100}}
+\thicklines
+\put(23,20){\vector(0,1){15}}
+\put(23,45){\vector(0,1){15}}
+\put(30,63){\vector(1,0){15}}
+\put(55,13){\vector(1,0){15}}
+\put(55,63){\vector(1,0){15}}
+\put(73,20){\vector(0,1){15}}
+\put(73,45){\vector(0,1){15}}
+\put(90,13){\vector(-1,0){15}}
+\put(80,63){\vector(1,0){15}}
+\end{picture}
+\end{center}
+
+\paragraph{Conventional versus Markov planning in stochastic environments.} If we were to attempt to plan by building a tree of the possible outcomes for this example, we would have the following:
+
+\Tree [.c1 [.N b1 c1 ] [.S c1 c2 ] W E ]
+
+\noindent In general, each action will have 3 possible outcomes. Thus, every two levels that we descend could create up to 12 new nodes.
+
+The major problems that are overcome with a policy are:
+\begin{itemize_packed}
+\item Large branching factor.
+\item Tree too deep: we could potentially get stuck in an infinite loop.
+\item Many states could be visited more than once.
+\end{itemize_packed}
+
+Now consider the case where we use a policy. Observe that it is possible to create a policy that will never end up in the -100 state. For example, if the agent is in position c4, it could choose to continually perform action "South", with a 90\% chance of not moving and a 10\% chance of moving West.
+
+The inconvenience here is that it may take a long time for the agent to arrive at its goal. We can account for this by modifying the reward function so that each move has a cost involved. For example, we might say
+\begin{center}
+$R(s) =
+\begin{cases}
++100 & \text{if } s = a4 \\
+-100 & \text{if } s = b4 \\
+-3 & \text{all other states}
+\end{cases}$
+\end{center}
+thus providing an incentive to make the path short. We may therefore formally state the goal of an MDP: to maximize the expected value of all future rewards.
+\begin{center}
+$\displaystyle E\left[\sum_{t=0}^{\infty} \gamma^t R_t \right] \rightarrow$ max
+\end{center}
+In this equation, $R_t$ is the reward at time $t$, and $E$ is the expected value function. $\gamma$ is called the \textbf{discount factor}. When given a value in $(0,1)$, it is an alternative to the negative reward of -3 used above, used to provide an incentive to find a reward sooner. The advantage of using $\gamma$ here is that we can bound the value of the expected value function:
+\begin{center}
+$\displaystyle E[\ldots] \leq \frac{1}{1-\gamma} |R_{\text{max}}|$
+\end{center}
+
+Using this, we may define a \textbf{value function} for each state, given our policy $\pi$.
+\begin{center}
+$\displaystyle V^\pi(s) = E_\pi \left[ \sum_t \gamma^t R_t | s_0 = s \right]$
+\end{center}
+Planning using MDPs involves calculating the value function for each state.
+
+\paragraph{Value iteration.} The value function can be calculated iteratively. We initially assign a value of 0 to all non-goal states. We then start with state a3:
+\begin{center}
+$V(a3,E) = 0.8*100 + 0.1*0 + 0.1*0 - 3 = 77$
+\end{center}
+We can then propagate this value for neighboring states:
+\begin{center}
+\begin{tabular}{r@{ } @{}l@{} @{ }l}
+$V(a2,E) $ & $= 0.8*77 + 0.1*0 + 0.1*0 - 3 $ & $= 58.6$ \\
+$V(b3,E) $ & $= 0.8*77 + 0.1*(-100) + 0.1*0 - 3 $ & $= 48.6$
+\end{tabular}
+\end{center}
+We continue this process until an initial value is assigned to all states. We can then repeat the process, using our new values, to get a better estimate.
+\begin{center}
+$V(a3,E) = 0.8*100 + 0.1*77 + 0.1*48.6 - 3 = 89.56$
+\end{center}
+If we continue to repeat this process, the values will converge to the true value for each state. This can be summarized with the following formula:
+\begin{center}
+$\displaystyle V(s) \leftarrow \left[ \max_a \gamma \sum_{s'}P(s'|s,a)V(s')\right] + R(s)$
+\end{center}
+where $a$ is the action that maximizes the sum, the sum is over all possible successor states $s'$ of $a$, and $V(s')$ is the current value of the successor state $s'$. This algorithm is called \textbf{back-up}. There is a theorem which states that this equation will converge.
+
+Back-up clearly helps us to find the optimal policy: the action to take for any square is the one that maximizes the expression for the value function.
+\begin{center}
+$\displaystyle \pi(s) = \operatorname*{arg\,max}_a \sum_{s'}P(s'|s,a)V(s')$
+\end{center}
+
+\paragraph{Summary.} With Markov Decision Processes, we have
+\begin{itemize_packed}
+\item a \underline{fully observable} environment: we have states $s_1,\ldots,s_N$ and actions $a_1,\ldots,a_k$
+\item a \underline{stochastic} environment: we only know $P(s'|a,s)$
+\item a \underline{reward function} for each state: $R(s)$
+\item the objective of \underline{maximizing the future reward}: $\max E(\sum_t \gamma^t R_t)$
+\item the key to solving an MDP is \underline{value iteration}, which
+\item converges to the \underline{optimum} policy.
+\end{itemize_packed}
+
+\section{Partially Observable Markov Decision Process (POMDP)}
+
+%===============================================================================
+
+\part{Reinforcement Learning}
+
+This unit builds on the previous one by asking the question: how can the agent find an optimal policy, if it initially knows nothing about the rewards?
+
+\paragraph{Review.} We have the following types of learning:
+\begin{itemize_packed}
+\item supervised, where we are given data points $(x_1, y_1)$, $(x_2,y_2)$, \ldots, and we wish to find an optimal function to calculate $y = f(x)$
+\item unsupervised, where we have data points $x_1,x_2,\ldots$, and we attempt to find patterns in the data, or probabilities $P(X=x)$
+\item reinforcement, where we have a series of state-action transitions $s,a,s,a,s,\ldots$, where each state has a reward associated, and we attempt to determine an optimal policy $\pi(s)$.
+\end{itemize_packed}
+
+Reinforcement agents differ in that we do not necessarily know the reward function, or even the probability of the outcome of an action. There are several types of agents that we can use, based on the situation.
+\begin{center}
+\begin{tabular}{c c c c}
+agent & know & learn & use \\
+\hline
+utility-based agent & P & R$\rightarrow$U & U \\
+Q-learning agent & & $Q(s,a)$ & $Q$ \\
+reflex agent & & $\pi(s)$ & $\pi$
+\end{tabular}
+\end{center}
+In addition, there are two ways we can vary these agents.
+
+\begin{defin}
+A \emph{\textbf{passive}} reinforcement learning agent has a fixed policy, and learns about R and P while executing that policy.
+\end{defin}
+
+\begin{defin}
+An \textbf{active} reinforcement learning agent modifies its policy during execution.
+\end{defin}
+
+For example, suppose that your agent are a passenger on a ship navigating uncharted waters. A passive agent is unable to change the captain's policy; however, it can still observe the actions (directions) that the ship takes, and learn about the environment. An active agent would be allowed to take control of the ship, and act on the knowledge it already has, perhaps enabling it to explore and continue to learn.
+
+\paragraph{Passive Temporal Difference Learning} This algorithm propagates the utility of each state backwards on each iteration. It thus requires many iterations in order to propagate values back from the end to the start state. The values of the utility function converge to the true utility.
+
+\begin{algorithm}
+\caption{Passive Temporal Difference Learning}
+\begin{algorithmic}[1]
+\IF{$s'$ is new}
+	\STATE{$U[s']\leftarrow r'$}
+\ENDIF
+\IF{$s$ is not null}
+	\STATE{increment $N_s[s]$}
+	\STATE{$U[s]\leftarrow U[s] + \alpha(N_s[s])(r + \gamma U[s'] - U[s])$}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+This algorithm has several potential weaknesses, notably:
+\begin{itemize_packed}
+\item it may take a long time to converge
+\item what it can learn is limited by the policy that it is given
+\item due to the policy, there may be states to which it cannot assign a utility
+\item even for states with a utility assigned, this may be a poor estimate.
+\end{itemize_packed}
+
+Some of these shortcomings may be addressed by \textbf{Active Greedy Temporal Difference Learning}. This algorithm re-computes the MDP ideal policy at the end of each iteration, taking into account the current utility estimates.
 
 \end{document}
