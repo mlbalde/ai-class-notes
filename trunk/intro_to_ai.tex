@@ -511,13 +511,13 @@ In addition,
 
 \put(150,180){Fan belt}
 \put(151,170){Broken}
-\put(148,166){\framebox(42,24)}
+\put(148,166){\framebox(41,24)}
 
 \put(160,166){\vector(-3,-2){24}}
 
 \put(120,140){Not}
 \put(110,130){Charging}
-\put(108,126){\framebox(42,24)}
+\put(108,126){\framebox(44,24)}
 
 \put(129,125){\vector(-2,-3){17}}
 
@@ -558,13 +558,13 @@ In addition,
 
 \put(215,80){Fuel Line}
 \put(216,70){Blocked}
-\put(213,66){\framebox(46,24)}
+\put(213,66){\framebox(45,24)}
 
 \put(230,65){\vector(-2,-1){70}}
 
 \put(267,80){Starter}
 \put(267,70){Broken}
-\put(265,66){\framebox(40,24)}
+\put(265,66){\framebox(35,24)}
 
 \put(270,65){\vector(-3,-1){100}}
 
@@ -658,9 +658,9 @@ The marginal likelihood is often expanded using the total probability.
 
 \begin{defin}[Conditional Independence] The variables $A$ and $B$ are \emph{\textbf{Conditionally Independent given $C$}} if
 \begin{center}
-$P(A|C,B) = P(A,C)$.
+$P(A|C,B) = P(A|C)$.
 \end{center}
-\noindent In this case, we write $A \perp B | C$.
+\noindent In this case, we write $A \perp B \; | \; C$.
 \end{defin}
 
 \paragraph{Conditional versus Absolute Independence.} Consider the following two examples:
@@ -680,7 +680,7 @@ $P(A|C,B) = P(A,C)$.
 \put(31,55){\vector(-1,-2){12}}
 \put(37,55){\vector(1,-2){12}}
 
-\put(13,1){$T_1 \perp T_2 | C$}
+\put(11,1){$T_1 \perp T_2 \; | \; C$}
 
 
 \put(110,60){$S$}
@@ -882,7 +882,7 @@ Consider the following Bayes network:
 
 \noindent Typically, a computer function would take B and E as the input, and calculate J and M as the output. In this case,
 
-\begin{tabular}{r c l c}
+\begin{tabular}{r@{ } @{}c@{} @{ }l l}
 B and E & are called the & \textbf{evidence} & (known) \\
 J and M & are called the & \textbf{query} & (desired) \\
 A & is & \textbf{hidden} & (required for computations)
@@ -1517,9 +1517,9 @@ A policy for our example problem might look like the following:
 
 \paragraph{Conventional versus Markov planning in stochastic environments.} If we were to attempt to plan by building a tree of the possible outcomes for this example, we would have the following:
 
-\Tree [.c1 [.N b1 c1 ] [.S c1 c2 ] W E ]
+\Tree [.c1 [.N b1 c1 c2 ] [.S c1 c2 ] [.W c1 b1 ] [.E c2 c1 b1 ] ]
 
-\noindent In general, each action will have 3 possible outcomes. Thus, every two levels that we descend could create up to 12 new nodes.
+\noindent In general, each action will have up to 3 possible outcomes. Thus, every two levels that we descend could create up to 12 new nodes.
 
 The major problems that are overcome with a policy are:
 \begin{itemize_packed}
@@ -1705,17 +1705,17 @@ Suppose we have the following Bayes Network describing the transitions from rain
 \put(60,20){S}
 \put(64,23){\circle{17}}
 
-\put(20,30){\line(-1,0){15}}
+\put(19,30){\line(-1,0){14}}
 \put(5,30){\line(0,-1){14}}
 \put(5,16){\vector(1,0){14}}
 \put(6,6){0.6}
 
-\put(30,28){\vector(1,0){28}}
+\put(31,28){\vector(1,0){27}}
 \put(38,30){0.4}
 \put(58,18){\vector(-1,0){28}}
 \put(40,9){0.2}
 
-\put(67,30){\line(1,0){15}}
+\put(69,30){\line(1,0){13}}
 \put(82,30){\line(0,-1){14}}
 \put(82,16){\vector(-1,0){14}}
 \put(70,6){0.8}
@@ -1724,15 +1724,15 @@ Suppose we have the following Bayes Network describing the transitions from rain
 \end{center}
 We define $P(R_t)$ and $P(S_t)$ to be the probabilities that it is rainy or sunny at time $t$. If we are given that $P(R_0) = 1$, we can calculate the probabilities that it will be rainy or sunny at any given time in the future.
 \begin{center}
-\begin{align*}
-P(R_1) & = P(R_1|R_0)P(R_0) \\
-& = 0.6 \\
-P(S_1) & = 1 - P(R_1) \\
-& = 0.4 \\
-P(R_2) & = P(R_2|R_1)P(R_1) + P(R_2|S_1)P(S_1) \\
-& = 0.6 * 0.6 + 0.2 * 0.4 \\
-& = 0.44
-\end{align*}
+\begin{tabular}{r@{ } @{}c@{} @{ }l}
+$P(R_1)$ & $=$ & $P(R_1|R_0)P(R_0)$ \\
+& $=$ & $0.6$ \\
+$P(S_1)$ & $=$ & $1 - P(R_1)$ \\
+& $=$ & $0.4$ \\
+$P(R_2)$ & $=$ & $P(R_2|R_1)P(R_1) + P(R_2|S_1)P(S_1)$ \\
+& $=$ & $0.6 * 0.6 + 0.2 * 0.4$ \\
+& $=$ & $0.44$
+\end{tabular}
 \end{center}
 
 \end{document}
