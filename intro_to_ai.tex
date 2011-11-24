@@ -175,8 +175,36 @@
 \put(-17,0){\usebox{#1}}
 }}
 
-
 \setlength{\unitlength}{1pt}
+
+
+% Draws a rainy-sunny diagram
+\newsavebox{\rainySunnyBox}
+\savebox{\rainySunnyBox}{
+\thicklines
+
+\put(20,20){R}
+\put(24,23){\circle{17}}
+
+\put(60,20){S}
+\put(64,23){\circle{17}}
+
+\put(19,30){\line(-1,0){14}}
+\put(5,30){\line(0,-1){14}}
+\put(5,16){\vector(1,0){14}}
+\put(6,32){0.6}
+
+\put(31,28){\vector(1,0){27}}
+\put(38,30){0.4}
+\put(58,18){\vector(-1,0){28}}
+\put(40,9){0.2}
+
+\put(69,30){\line(1,0){13}}
+\put(82,30){\line(0,-1){14}}
+\put(82,16){\vector(-1,0){14}}
+\put(70,32){0.8}
+}
+
 
 % Makes a list with no extra space between the lines.
 \newenvironment{itemize_packed}{
@@ -1690,36 +1718,14 @@ Consider the following Bayes Network:
 
 \end{picture}
 \end{center}
-The states of the Markov Chain are unknown, and we must infer information about them from the measurements.
+The states of the Markov Chain are unknown, and we must infer information about them from the measurements. The distinguishing feature of a Markov Chain is that the past, the future, and the present measurement, are all conditionally independent given the present state.
 
 \section{Markov Chains}
 
 Suppose we have the following Bayes Network describing the transitions from rainy (R) and sunny (S) days.
 \begin{center}
 \begin{picture}(85,40)
-\thicklines
-
-\put(20,20){R}
-\put(24,23){\circle{17}}
-
-\put(60,20){S}
-\put(64,23){\circle{17}}
-
-\put(19,30){\line(-1,0){14}}
-\put(5,30){\line(0,-1){14}}
-\put(5,16){\vector(1,0){14}}
-\put(6,6){0.6}
-
-\put(31,28){\vector(1,0){27}}
-\put(38,30){0.4}
-\put(58,18){\vector(-1,0){28}}
-\put(40,9){0.2}
-
-\put(69,30){\line(1,0){13}}
-\put(82,30){\line(0,-1){14}}
-\put(82,16){\vector(-1,0){14}}
-\put(70,6){0.8}
-
+\put(0,0){\usebox{\rainySunnyBox}}
 \end{picture}
 \end{center}
 We define $P(R_t)$ and $P(S_t)$ to be the probabilities that it is rainy or sunny at time $t$. If we are given that $P(R_0) = 1$, we can calculate the probabilities that it will be rainy or sunny at any given time in the future.
@@ -1765,5 +1771,39 @@ $P(R_{t+1}|R_t)$ & $=$ & $1 - P(S_{t+1}|R_t)$ \\
 \end{tabular}
 \end{center}
 However, it is often preferable to use Laplacian Smoothing to estimate the probabilities in this case.
+
+\paragraph{Hidden Markov Models.} The \textbf{hidden} part of the model comes from the following: suppose that we do not actually know the values of $R_t$ and $S_t$, but instead we only have observations that tell us something about them. For example, suppose that we can observe only whether the professor is happy or grumpy, and that we know with what probabilities the weather can affect his mood. We might have the following diagram:
+\begin{center}
+\begin{picture}(85,70)
+\put(0,30){\usebox{\rainySunnyBox}}
+\thicklines
+\color{red}
+\put(20,45){\vector(-1,-4){8}}
+\put(60,45){\vector(-1,-4){8}}
+\put(26,45){\vector(1,-4){8}}
+\put(66,45){\vector(1,-4){8}}
+
+\put(7,2){H}
+\put(32,2){G}
+\put(47,2){H}
+\put(72,2){G}
+
+\put(0,25){0.4}
+\put(31,30){0.6}
+\put(40,22){0.3}
+\put(73,25){0.1}
+\end{picture}
+\end{center}
+Now, suppose that we are given that $P(R_0) = P(S_0) = 0.5$. We may wish to determine the probability of the weather for the following day, given only an observation about the professor's mood: $P(R_1|H_1)$. To calculate this, we use Bayes' Rule:
+\begin{center}
+$\displaystyle P(R_1|H_1) = \frac{P(H_1|R_1)P(R_1)}{P(H_1)}$
+\end{center}
+We see from the diagram that $P(H_1|R_1) = 0.4$, and we already learned how to calculate $P(R_1) = 0.4$ and $P(H_1) = 0.16 + 0.54 = 0.7$. This expression therefore evaluates to about 0.229.
+
+\paragraph{Summary.} We have learned how to use HMMs to do two things:
+\begin{itemize_packed}
+\item \textbf{State Estimation} means computing the probability of internal (hidden) states, given measurements.
+\item \textbf{Prediction} is used to calculate not only the next state, but also the next measurement.
+\end{itemize_packed}
 
 \end{document}
