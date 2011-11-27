@@ -1806,4 +1806,122 @@ We see from the diagram that $P(H_1|R_1) = 0.4$, and we already learned how to c
 \item \textbf{Prediction} is used to calculate not only the next state, but also the next measurement.
 \end{itemize_packed}
 
+%===============================================================================
+
+\part{Games}
+
+A game can be described using the following parameters:
+\begin{itemize_packed}
+\item A set of states $S$ with an initial state $s_0$
+\item A set of players $P$
+\item A set of possible actions for each player at a given state $Actions(s,p)$
+\item A transition function $Result(s,a)\rightarrow s'$
+\item An end-game test $Terminal(s)\rightarrow \{true, false\}$
+\item A utility function $U(s,p)\rightarrow \mathbb{R}$ indicating the value of a given state for a given player. In simple games, this might simply be 0 or 1.
+\end{itemize_packed}
+
+\paragraph{Example.} Consider the games of checkers and chess. These games are
+\begin{itemize_packed}
+\item \textbf{deterministic}
+\item \textbf{two-player}
+\item \textbf{zero-sum}, i.e. the sum of the utilities to the two players is 0. If one player gets +1 for winning, the other player gets -1 for losing.
+\end{itemize_packed}
+To solve this game, we can start by building a search tree of all possible states and actions. All even nodes (i.e. at depth 0, 2, 4, ...) represent a decision by the first player, and all odd nodes represent a decision by the second.
+In building the tree, we eventually reach the terminal states of the game, with values +1 if player 1 wins, and -1 if player 2 wins. We can then backtrack up the tree, assigning values to preceding nodes by assuming that, when given a choice, each player will act rationally. By filling the tree in this way, we eventually determine a winning move for each player at each state.
+For example, let player 1 be $\triangle$ and player 2 be $\nabla$. We start with the following tree.
+\begin{center}
+\Tree [.$\triangle$ [.$\nabla$ $\triangle$ $\triangle$ [.$\vdots$ [.$\triangle$ {+1} {-1} ] ] ] [.$\nabla$ $\triangle$ $\triangle$ ] [.$\nabla$ $\triangle$ $\triangle$ ] ]
+\end{center}
+Since player 1 wishes to maximize the reward, given the choice between +1 and -1, it will choose +1. Thus, we can assign the value +1 to the node directly above the terminal states.
+\begin{center}
+\begin{tabular}{r c l}
+\Tree [.$\triangle$ {+1} {-1} ] & $\longrightarrow$ & \Tree [.{+1} {+1} {-1} ]
+\end{tabular}
+\end{center}
+We then backtrack up the tree, assigning values to each node.
+
+The basic algorithm just described is the following.
+\begin{algorithm}
+\caption{value}
+\begin{algorithmic}[1]
+\REQUIRE A state s
+\ENSURE The value of the state s
+\IF{$Terminal(s)$}
+	\RETURN $U(s)$
+\ENDIF
+\IF{s is player 1}
+	\RETURN $maxValue(s)$
+\ENDIF
+\IF{s is player 2}
+	\RETURN $minValue(s)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\noindent The $maxValue$ and $minValue$ functions return the maximum and minimum value of all successor states of a node.
+
+The problem with this approach is that it can be expensive in terms of space and time. If the branching factor (the average number of branches from a node) is $b$, and the average depth of the tree is $m$, then the run-time of the tree search algorithm will be $O(b^m)$. Since the $maxValue$ function is depth-first, only $O(bm)$ space would be required.
+
+Clearly, this is impossibly impractical for games like chess, where $b$ is in the dozens and $m$ can be very long. One technique is to attempt to reduce the size of the tree, by either reducing $b$, $m$ or using GraphSearch.
+
+\paragraph{Reducing $b$.} Suppose we have the following tree.
+\begin{center}
+\Tree [.$\triangle$ [.$\nabla$ 3 12 8 ] [.$\nabla$ 2 3 9 ] [.$\nabla$ 14 1 8 ] ]
+\end{center}
+We know that $\triangle$ wishes to maximize the value, and $\nabla$ wishes to minimize. We start by assigning the value 3 to the first $\nabla$ node. Observe that, for the second $\nabla$ node, the first child node's value is 2. We therefore know that the value for this $\nabla$ will be $\leq$ 2. Since $\triangle$ wishes to maximize the value, we know that it will not choose this path, and it is no longer necessary to continue calculating the value for the other children. Likewise, on the third $\nabla$ node, once we find the 1, it is no longer necessary to calculate the 8. We can thus prune the tree as follows.
+\begin{center}
+\Tree [.$\triangle$ [.3 3 12 8 ] [.{$\leq 2$} 2 ] [.{$\leq 1$} 14 1 ] ]
+\end{center}
+
+\paragraph{Reducing $m$.} One way to reduce the depth of the tree is simply to stop searching at a given depth, treating all nodes at that depth as terminal nodes. The question then arises of how to assign a value to these pseudo-terminal nodes. An \textbf{evaluation function} $ev(s)$ attempts to estimate the value of the state $s$. We assign the value of $ev(s)$ to each new child node.
+\newline
+\newline
+We can use these two techniques to revise the $value$ function.
+\begin{algorithm}
+\caption{value (optimized)}
+\begin{algorithmic}[1]
+\REQUIRE A state s, a maximum depth, $\alpha$ = the highest $maxValue$, $\beta$ = the lowest $minValue$
+\ENSURE The value of the state s
+\IF{cutoff$(s,depth)$}
+	\RETURN $ev(s)$
+\ENDIF
+\IF{$Terminal(s)$}
+	\RETURN $U(s)$
+\ENDIF
+\IF{s is player 1}
+	\RETURN $maxValue(s, depth, \alpha, \beta)$
+\ENDIF
+\IF{s is player 2}
+	\RETURN $minValue(s, depth, \alpha, \beta)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\noindent This algorithm would be initially called with $value(S_0, 0, -\infty, +\infty)$. We revise the $maxValue$ function as follows.
+\begin{algorithm}
+\caption{maxValue (optimized)}
+\begin{algorithmic}[1]
+\REQUIRE A state s, a maximum depth, $\alpha$ = the highest $maxValue$, $\beta$ = the lowest $minValue$
+\ENSURE The value of the state s
+\STATE v = $-\infty$
+\FOR{$a$, $s'$ in $successors(s)$}
+	\STATE $v = \max(v, value(s', depth+1, \alpha, \beta))$
+	\IF{$v \geq \beta$}
+		\RETURN $v$
+	\ENDIF
+	\STATE $\alpha = \max(\alpha, v)$
+\ENDFOR
+\RETURN $v$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Summary.} We looked at the following optimizations.
+\begin{itemize_packed}
+\item \textbf{$\alpha-\beta$ pruning}: can potentially reduce the run-time from $O(b^m)$ to $O(b^{m/2})$.
+\item \textbf{Evaluation functions}
+\item \textbf{Converting to a graph}.
+\end{itemize_packed}
+
+\paragraph{Chance.} What can we do if the game is stochastic? In this case, when we arrive at a turn where the outcome of a move is not clear, we consider the value of that node to be the \textbf{expected value} of all possible results.
+
 \end{document}
