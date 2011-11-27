@@ -1924,4 +1924,103 @@ We can use these two techniques to revise the $value$ function.
 
 \paragraph{Chance.} What can we do if the game is stochastic? In this case, when we arrive at a turn where the outcome of a move is not clear, we consider the value of that node to be the \textbf{expected value} of all possible results.
 
+%===============================================================================
+
+\part{Game Theory}
+
+\begin{defin}
+\emph{\textbf{Game Theory}} is the study of finding an optimal policy, when that policy can depend on an opponent's policy (and vice-versa).
+\end{defin}
+
+\paragraph{The Prisoner's Dilemma.} Suppose that two people, Alice and Bob, have been arrested for collaborating on a crime. The police question each individual separately. If each remains silent, the police will only have some evidence, and they will each get a light sentence. If one of them testifies against the other, then that one will be released, and the other will get a heavy sentence. If they both agree to testify, then they will both get moderate sentence.
+
+We can model this situation using the following grid.
+\begin{center}
+\begin{tabular}{r|c|c|}
+\multicolumn{1}{r}{} & \multicolumn{1}{c}{A:testify} & \multicolumn{1}{c}{A:refuse} \\
+\cline{2-3}
+B:testify & A = -5, B = -5 & A = -10, B = 0 \\
+\cline{2-3}
+B:refuse & A = 0, B = -10 & A = -1, B = -1 \\
+\cline{2-3}
+\end{tabular}
+\end{center}
+What strategy should Alice and Bob follow?
+
+\begin{defin}
+A \emph{\textbf{Dominant Strategy}} is one for which a player does better than any other strategy, no matter what the other player does.
+\end{defin}
+
+\begin{defin}
+A \emph{\textbf{Pareto Optimal}} outcome is an outcome such that there is no other outcome that all players would prefer.
+\end{defin}
+
+\begin{defin}
+An \emph{\textbf{equilibrium}} is an outcome such that no player can benefit from a different strategy, assuming that the other players stay the same.
+\end{defin}
+
+For Alice and Bob, the Dominant Strategy for each would be to testify; however, the Pareto optimal outcome only occurs when both refuse. The equilibrium also occurs when both testify.
+
+Consider another example, where Acme makes video game systems, and Best makes video games, and each must decide what format to use for the games (DVD or Blu-Ray).
+\begin{center}
+\begin{tabular}{r|c|c|}
+\multicolumn{1}{r}{} & \multicolumn{1}{c}{A:blu} & \multicolumn{1}{c}{A:dvd} \\
+\cline{2-3}
+B:blu & A = 9, B = 9 & A = -4, B = -1 \\
+\cline{2-3}
+B:dvd & A = -3, B = -1 & A = 5, B = 5 \\
+\cline{2-3}
+\end{tabular}
+\end{center}
+There is no dominant strategy here: the best choice for each player depends on what the other player will do. There are two equilibrium points that occur when both A and B choose the same format. The Pareto optimal outcome is when both choose Blu-Ray.
+
+\paragraph{Two-finger morra.} Consider another game, where we have two players, Even and Odd. On each turn, each player shows one or two fingers. If the sum of all fingers is even, then Even wins that number of dollars, and if the sum is odd, then Odd wins that many. We have the following matrix (this is a zero-sum game, so we only note the outcome for Even).
+\begin{center}
+\begin{tabular}{r|c|c|}
+\multicolumn{1}{r}{} & \multicolumn{1}{c}{O:one} & \multicolumn{1}{c}{O:two} \\
+\cline{2-3}
+E:one & E = 2 & E = -3 \\
+\cline{2-3}
+E:two & E = -3 & E = 4 \\
+\cline{2-3}
+\end{tabular}
+\end{center}
+Clearly, there is no dominant strategy for this game.
+
+\begin{defin}
+A single strategy of always playing the same move is called a \emph{\textbf{pure}} strategy, whereas a \emph{\textbf{mixed}} strategy is one where we have a probability distribution over all moves.
+\end{defin}
+A mixed strategy is used when there is no dominant (pure) strategy available.
+\\
+
+It may be easier to consider this game if represented using trees. The left branch represents choosing 1, and the right branch represents choosing 2.
+\begin{center}
+\Tree [.E:-3 [.O:-3 2 -3 ] [.O:-3 -3 4 ] ]
+\Tree [.O:2 [.E:2 2 -3 ] [.E:4 -3 4 ] ]
+\end{center}
+In each situation, the starting player is severely handicapped, because he must reveal his strategy. We might instead consider a mixed strategy, in which the starting player announces that he will choose 1 with probability $p$ (and thus, he will choose 2 with probability $1-p$).
+\begin{center}
+\Tree [.{E\\ $p$:one, $(1-p)$:two} [.O {$2p - 3(1-p)$} {$-3p + 4(1-p)$} ] ]
+\Tree [.{O\\ $q$:one, $(1-q)$:two} [.E {$2q - 3(1-q)$} {$-3q + 4(1-q)$} ] ]
+\end{center}
+Each player would then wish to choose the value of $p$ or $q$ that causes the leaves to be equal. Solving these equations yields that $p=q=\frac{7}{12}$. We thus can calculate the that utility of this strategy to E is $U_E = -\frac{1}{12}$.
+
+\paragraph{Strategies.} In practice, such approaches are often impractical. For example, in poker, the state space is around $10^{18}$ possibilities. We can try to reduce the state space in various ways. For example, we might ignore the suit of the cards; we might lump cards together (for example, if I'm holding tens, I can consider all the other cards as greater or less than 10); or I could simply only consider a sub-set of all possible cards.
+
+In general, Game Theory is good at handling
+\begin{itemize_packed}
+\item uncertainty
+\item partial observability
+\item multiple agents
+\item stochastic environments
+\item dynamic environments.
+\end{itemize_packed}
+However, it is less powerful with
+\begin{itemize_packed}
+\item unknown actions
+\item continuous actions
+\item irrational opponents
+\item unknown utilities.
+\end{itemize_packed}
+
 \end{document}
