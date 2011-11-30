@@ -206,6 +206,16 @@
 }
 
 
+% Simple savebox for a scheduling node
+\newcommand{\schedulingNode}[3] {
+\framebox(15,36){
+\put(-4,-16){#3}
+\put(-4,-5){#2}
+\put(-4,6){#1}
+}
+}
+
+
 % Makes a list with no extra space between the lines.
 \newenvironment{itemize_packed}{
 \begin{itemize}
@@ -2022,5 +2032,62 @@ However, it is less powerful with
 \item irrational opponents
 \item unknown utilities.
 \end{itemize_packed}
+
+%===============================================================================
+
+\part{Advanced Planning}
+
+We will discuss:
+\begin{itemize_packed}
+\item \textbf{time}: actions that persist over a length of time
+\item \textbf{resources} necessary to complete a task
+\item \textbf{active perception}
+\item \textbf{hierarchical plans}, i.e. steps with sub-steps
+\end{itemize_packed}
+
+\paragraph{Scheduling.} We may have a scheduling network of tasks that we must complete. The start state is $S$ and the final state is $F$. Each task takes a certain amount of time to complete. We define $ES$ to be the earliest start time and $LS$ the latest start time for which it is possible to finish the network in the shortest possible amount of time. We can calculate them recursively:
+\begin{center}
+\begin{tabular}{r@{} @{ }c@{ } @{}l}
+$ES(s)$ & $=$ & $0$ \\
+$ES(B)$ & $=$ & $max_{A\rightarrow B} ES(A) + Duration(A)$ \\
+$LS(F)$ & $=$ & $ES(f)$ \\
+$LS(A)$ & $=$ & $min_{B\leftarrow A} LS(B) - Duration(A)$
+\end{tabular}
+\end{center}
+
+\paragraph{Example.}
+\begin{center}
+\begin{picture}(200,80)
+% Dimensions 20,36
+\put(20,25){\schedulingNode{S}{0}{0}}
+\put(39,35){\vector(2,-1){25}}
+\put(39,51){\vector(2,1){25}}
+
+\put(60,0){\schedulingNode{60}{0}{0}}
+\put(79,18){\vector(1,0){25}}
+\put(100,0){\schedulingNode{15}{60}{60}}
+\put(119,18){\vector(1,0){25}}
+\put(140,0){\schedulingNode{10}{75}{75}}
+\put(159,18){\vector(2,1){25}}
+
+\put(60,50){\schedulingNode{30}{0}{15}}
+\put(79,68){\vector(1,0){25}}
+\put(100,50){\schedulingNode{30}{30}{45}}
+\put(119,68){\vector(1,0){25}}
+\put(140,50){\schedulingNode{10}{60}{75}}
+\put(159,68){\vector(2,-1){25}}
+
+\put(180,25){\schedulingNode{F}{85}{85}}
+
+\color{red}
+\put(0,51){Dur.}
+\put(0,40){$ES$}
+\put(0,29){$LS$}
+\end{picture}
+\end{center}
+
+\paragraph{Resources.}
+
+\paragraph{Hierarchical Planning.} In practice, it is often impossible to model and plan for all possible actions. Instead, we can use a \textbf{Hierarchical Transition Network} to model higher-order, abstract plans, that are composed of several smaller sub-steps. This idea is called \textbf{refinement planning}. Each higher-order plan is composed of multiple \textit{refinements}, which describe how to complete the plan. The overall plan can be achieved provided that each higher-order plan has a refinement that can be achieved.
 
 \end{document}
