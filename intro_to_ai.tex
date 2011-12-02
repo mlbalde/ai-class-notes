@@ -2090,4 +2090,16 @@ $LS(A)$ & $=$ & $min_{B\leftarrow A} LS(B) - Duration(A)$
 
 \paragraph{Hierarchical Planning.} In practice, it is often impossible to model and plan for all possible actions. Instead, we can use a \textbf{Hierarchical Transition Network} to model higher-order, abstract plans, that are composed of several smaller sub-steps. This idea is called \textbf{refinement planning}. Each higher-order plan is composed of multiple \textit{refinements}, which describe how to complete the plan. The overall plan can be achieved provided that each higher-order plan has a refinement that can be achieved.
 
+\paragraph{Reachable States.} We can also solve a problem using refinement of belief states. From the starting state, we can enumerate all the possible successor states, and then all successors of the successors, until we end up with a successor state that contains a goal state. We then start at the goal state and backtrack until we reach the initial state.
+
+%===============================================================================
+
+\part{Computer Vision I}
+
+\paragraph{Cameras.} A pinhole camera can be defined by its focal length, image depth, and the height of the object being photographed. These values satisfy the equation
+\begin{center}
+$\displaystyle x = X * \frac{f}{Z}$
+\end{center}
+where $X$ is the height of the object, $x$ is the height of the image of the object, $f$ is the focal length, and $Z$ is the distance from the object to the camera. This is known as the \textbf{perspective law}, and can be used to find the distance to an object, given that object's actual height.
+
 \end{document}
