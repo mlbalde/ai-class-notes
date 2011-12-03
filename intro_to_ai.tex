@@ -2102,4 +2102,122 @@ $\displaystyle x = X * \frac{f}{Z}$
 \end{center}
 where $X$ is the height of the object, $x$ is the height of the image of the object, $f$ is the focal length, and $Z$ is the distance from the object to the camera. This is known as the \textbf{perspective law}, and can be used to find the distance to an object, given that object's actual height.
 
+Computer vision can be used to
+\begin{itemize_packed}
+\item classify objects;
+\item perform 3D reconstruction;
+\item perform motion analysis.
+\end{itemize_packed}
+
+\paragraph{Object recognition.} One problem is to attempt to identify objects that the computer sees. A key concept is \textbf{invariance}, which refers to the fact that the image will have natural variations that don't affect the object itself, and so the software must be invariant with respect to those natural variations. These variations may include
+\begin{itemize_packed}
+\item scale
+\item illumination
+\item rotation
+\item deformation
+\item occlusion
+\item view point.
+\end{itemize_packed}
+Ideally, we would want to write software that is invariant in spite of these variances in the image of the object.
+
+Grayscale images are often used instead of color images, because they are less variant with respect to lighting changes. A grayscale image can be represented by a matrix of 8-bit intensity values.
+
+We often start by attempting to extract \textbf{features} from the image, such as lines or corners. For example, we might apply a \textbf{mask} (or \textbf{kernel}) wherein we subtract the value of the pixel to the right of our current pixel.
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+255 & 212 & 7 & 1 & 3 \\
+\hline
+211 & 237 & 3 & 9 & 0 \\
+\hline
+218 & 240 & 8 & 12 & 2 \\
+\hline
+241 & 241 & 5 & 4 & 0 \\
+\hline
+\end{tabular}
+$\otimes$
+\begin{tabular}{|c|c|}
+\multicolumn{2}{c}{\textbf{mask}} \\
+\hline
++1 & -1 \\
+\hline
+\end{tabular}
+$=$
+\begin{tabular}{|c|c|c|c|}
+\hline
+43 & 205 & 6 & -2 \\
+\hline
+-26 & 234 & -6 & 9 \\
+\hline
+-22 & 232 & -4 & 10 \\
+\hline
+0 & 236 & 1 & 4 \\
+\hline
+\end{tabular}
+\end{center}
+In this example, the second column (after applying the mask) stands out quite clearly from the others. There is obviously a vertical line here.
+
+This type of operation is called a \textbf{Linear Filter}. Mathematically, we can express a linear filter as a function $g$ from an image (matrix) $I$ to the resulting image $I'$ as
+\begin{center}
+$\displaystyle I'(x,y) = \sum_{u,v} I(x-u, y-v) \cdot g(u,v)$.
+\end{center}
+
+Similarly to the previous example, we could use a vertical filter to find horizontal edges in the image. If we define
+\begin{center}
+$I_x = I \otimes$
+\begin{tabular}{|c|c|}
+\hline
+-1 & +1 \\
+\hline
+\end{tabular}
+
+$I_y = I \otimes$
+\begin{tabular}{|@{}c@{}|}
+\hline
++1 \\
+\hline
+-1 \\
+\hline
+\end{tabular}
+\end{center}
+(in other words, the gradient of the image is $(I_x, I_y)$) then we can define the \textbf{gradient image} $E$ to be
+\begin{center}
+$\displaystyle E = \sqrt{(I_x)^2 + (I_y)^2}$.
+\end{center}
+The gradient image captures all lines where there is a strong transition between dark and light.
+
+This technique can be improved even further using a \textbf{Canny edge detector}.
+
+In general, there exist several different types of kernels that can be used. One type, called a \textbf{Gaussian kernel}, is a matrix with high values in the center, which drop off exponentially toward the edges. Using such a kernel will result in a blurred image. This can be useful for several reasons, including:
+\begin{itemize_packed}
+\item \textbf{Down-sampling}. Using Gaussian kernel before shrinking an image is more effective than selecting individual pixels from the original.
+\item \textbf{Noise reduction}. Blurring the image can smooth away noise.
+\end{itemize_packed}
+
+The convolution operation is associative: if we perform the operation
+\begin{center}
+$I \otimes f \otimes g$,
+\end{center}
+where $f$ is a Gaussian kernel and $g$ is a gradient kernel, we can associate $f$ and $g$, resulting in a single kernel $(f\otimes g)$ to be applied to $I$.
+
+\paragraph{Corner detection.} It may be more useful to detect corners than to detect edges, since it can be difficult to identify one's position on an edge. If we find a neighborhood of points where
+\begin{center}
+$\sum (I_x)^2 \rightarrow$ large
+$\sum (I_y)^2 \rightarrow$ large
+\end{center}
+then there is probably a corner here, composed of horizontal and vertical edges. However, if the corner is rotated, these values won't stand out as much. \textbf{Harris Corner Detection} instead uses the matrix
+\begin{center}
+$\begin{pmatrix}
+\sum (I_x)^2 & \sum I_xI_y \\
+\sum I_xI_y & \sum (I_y)^2
+\end{pmatrix}$
+\end{center}
+and then calculates its eigenvalues. If the eigenvalues are large, then there is a corner here.
+
+\paragraph{Modern feature detection.} Today's algorithms, similar to Harris corner detection, are localizable, but also have unique signatures, gathering data that is invariant under scaling or rotation. Two main algorithms are
+\begin{itemize_packed}
+\item \textbf{HOG} (histogram of oriented gradients)
+\item \textbf{SIFT} (scale invariant feature transform).
+\end{itemize_packed}
+
 \end{document}
