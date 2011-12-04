@@ -2220,4 +2220,103 @@ and then calculates its eigenvalues. If the eigenvalues are large, then there is
 \item \textbf{SIFT} (scale invariant feature transform).
 \end{itemize_packed}
 
+%===============================================================================
+
+\part{Computer Vision II (3d vision)}
+
+A key problem when using a camera is to attempt to determine the depth of an image: the distance from the object to the camera. One way to get more information to capture the depth of an object is to use \textbf{stereo vision}, i.e. two cameras. We have the following situation:
+\begin{center}
+\begin{picture}(200,100)
+\thicklines
+\put(10,0){\line(0,1){42}}
+\put(20,0){\line(0,1){20}}
+\put(20,21){\line(0,1){20}}
+
+\put(10,50){\line(0,1){42}}
+\put(20,50){\line(0,1){20}}
+\put(20,71){\line(0,1){20}}
+
+\put(5,20){\line(0,1){50}}
+\put(7,20){\line(-1,0){5}}
+\put(7,70){\line(-1,0){5}}
+\put(-9,42){$B$}
+
+\put(120,45){\circle*{3}}
+\put(118,48){$P$}
+
+\color{red}
+\put(20,20){\line(4,1){120}}
+\put(20,70){\line(4,-1){120}}
+\put(118,45){\vector(-1,0){99}}
+\put(50,47){$Z$}
+
+\color{blue}
+\put(20,20){\line(-4,-1){10}}
+\put(20,20){\line(-1,0){10}}
+\put(20,70){\line(-4,1){10}}
+\put(20,70){\line(-1,0){10}}
+
+\put(10,45){\vector(1,0){11}}
+\put(12,49){$f$}
+
+\put(5,20){\line(0,-1){3}}
+\put(7,17){\line(-1,0){5}}
+\put(-9,17){$x_2$}
+\put(5,70){\line(0,1){3}}
+\put(7,73){\line(-1,0){5}}
+\put(-9,70){$x_1$}
+
+\end{picture}
+\end{center}
+from which we deduce the following equation.
+\begin{center}
+$\displaystyle \frac{x_2 - x_1}{f} = \frac{B}{Z} \;\;\Rightarrow\;\; Z = \frac{fB}{x_2 - x_1}$
+\end{center}
+
+\paragraph{Correspondence, aka Data Association.} Suppose we find an interesting point on one camera, and we wish to find that point in the other camera. If we do not know the depth of the point, then the most we know is that it occurs somewhere on the ray that goes from the point's image on the camera's sensor, to the actual point. The projection of this ray onto the second camera will be a line; thus, instead of searching everywhere on the second camera's image for our point, we can simply search along the projection of the ray.
+\begin{center}
+\begin{picture}(100,100)
+\thicklines
+
+\put(0,10){\line(0,1){20}}
+\put(0,10){\line(4,-1){30}}
+\put(30,2){\line(0,1){20}}
+\put(0,30){\line(4,-1){30}}
+
+\put(50,0){\line(4,1){30}}
+\put(50,0){\line(0,1){20}}
+\put(80,8){\line(0,1){20}}
+\put(50,20){\line(4,1){30}}
+
+\color{red}
+\put(40,80){\circle*{3}}
+\put(10,20){\circle*{3}}
+\put(10,20){\vector(1,2){40}}
+
+\put(50,5){\vector(2,1){30}}
+\end{picture}
+\end{center}
+
+One way to try to find the point in the second image corresponding to the point in the first image, is called \textbf{sum of squared differences (SSD) minimization}. We take a small neighborhood of the point in question. We then search along the line in the second image for a neighborhood that minimizes the SSD. In other words, for two given neighborhoods of pixels, we calculate
+\begin{center}
+$\displaystyle \sum_{pixels} (($normalized left pixel$) - ($normalized right pixel$))^2$
+\end{center}
+and we search for the neighborhood in the second image that minimizes this sum.
+
+Another problem can occur if parts of the subject are occluded, so that each camera's image contains some features that are not present in the other one. For example, assume the cameras are looking at a box with a red face and blue sides, on a black background. Both cameras see the red face and black background, but each camera sees only one of the blue sides. We might have the following two scanlines:
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+b & b & \color{blue} B & \color{red} R & \color{red} R & \color{red} R & b & b \\
+\hline
+\end{tabular}
+
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+b & b & \color{red} R & \color{red} R & \color{red} R & \color{blue} B & b & b \\
+\hline
+\end{tabular}
+\end{center}
+The question then arises, how do we decide to align these two scanlines? We could use a penalty function, e.g. assign a cost of 10 for each pixel removed for occlusion, and a cost of 20 for each poorly-matched pixel. The decision of which pixels to occlude can then be reduced to a simple path-finding algorithm.
+
 \end{document}
