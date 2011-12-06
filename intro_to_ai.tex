@@ -2319,4 +2319,30 @@ b & b & \color{red} R & \color{red} R & \color{red} R & \color{blue} B & b & b \
 \end{center}
 The question then arises, how do we decide to align these two scanlines? We could use a penalty function, e.g. assign a cost of 10 for each pixel removed for occlusion, and a cost of 20 for each poorly-matched pixel. The decision of which pixels to occlude can then be reduced to a simple path-finding algorithm.
 
+\paragraph{Structure from Motion}
+
+SFM involves inferring 3-dimensional structure from a moving camera taking 2-dimensional images. Much work has been done from the early 90s onward. In general, with $m$ camera images (the "motion") and $n$ points (the "structure"), we will have to solve an equation with $2mn$ constraints and $6m + 3n$ unknowns.
+
+%===============================================================================
+
+\part{Robotics I}
+
+Robotics can be a difficult subject, because the environments are stochastic, partially observable, continuous, and may even be adversarial. A robot attempts to sense enough information to estimate an internal state that is sufficient to determine what to do next.
+
+Assuming a simple robot moving on a two-dimensional plane, the robot will need the following state variables:
+\begin{itemize_packed}
+\item $x$, $y$: the position of the robot
+\item $\theta$: the angular position (orientation)
+\item $v$: the linear velocity
+\item $\omega$: the angular velocity.
+\end{itemize_packed}
+These values can be updated using a simple approximation: for a small time step $\Delta t$, we calculate:
+\begin{center}
+\begin{tabular}{r@{} @{ }c@{ } @{}l}
+$x'$ & $=$ & $x + v\Delta t \cos \theta$ \\
+$y'$ & $=$ & $y + v\Delta t \sin \theta$ \\
+$\theta'$ & $=$ & $\theta + \omega \Delta t$
+\end{tabular}
+\end{center}
+
 \end{document}
