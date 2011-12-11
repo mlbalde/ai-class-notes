@@ -1816,6 +1816,47 @@ We see from the diagram that $P(H_1|R_1) = 0.4$, and we already learned how to c
 \item \textbf{Prediction} is used to calculate not only the next state, but also the next measurement.
 \end{itemize_packed}
 
+\section{Particle Filters}
+
+Particle filters are a method of guessing the possible state of an agent in a stochastic environment, where the agent's sensors may not be precise. Initially, the "particles" are spread evenly throughout the state space. As the agent (a robot, for example) moves through the environment, it weights the particles based on the probability of the agent being at that particle, given the previous measurements. At each iteration, the algorithm creates a new set of particles; however, instead of distributing them evenly, they are selected from the previous set of weighted particles, using the weight as the probability that they will be selected.
+
+Particle filters have the following pros and cons:
+\begin{itemize_packed}
+\item They are easy to implement.
+\item They don't work well in high-dimensional spaces, due to the number of particles required.
+\item They don't work well with discrete environments. They are more adapted to environments with some "noise" added.
+\end{itemize_packed}
+
+The following algorithm is repeated for each measurement; the basic sequence is
+\begin{itemize_packed}
+\item Look at the measurements
+\item Compute the weights
+\item Sample
+\item Predict
+\end{itemize_packed}
+
+\begin{algorithm}
+\caption{Particle Filter Algorithm}
+\begin{algorithmic}[1]
+\REQUIRE A set $S$ of particles, with their associated importance weights, a control vetor $u$ and a measurement vector $Z$
+\ENSURE A new set $S'$ of particles, with their weights adjusted according to the measurement $Z$
+
+\STATE{$S' = \emptyset$ and $\eta = 0$}
+
+\FOR{$i = 1\ldots |S|$}
+	\STATE{sample $j ~ \{w\}$ with replacement}
+	\STATE{$x' ~ P(x' | u, s_j)$}
+	\STATE{$w' = P(Z|x')$}
+	\STATE{$\eta = \eta + w'$}
+	\STATE{$S' = S' \cup \{<x', w'>\}$}
+\ENDFOR
+
+\FOR{$i = 1\ldots |S'|$}
+	\STATE{$w_i = w_i / \eta$}
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
 %===============================================================================
 
 \part{Games}
